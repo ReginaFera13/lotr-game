@@ -28,6 +28,8 @@ SECRET_KEY = env.get("DJANGO_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 ALLOWED_HOSTS = []
 
 
@@ -42,11 +44,30 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
+    'dev_area_app',
+    'dev_character_app',
+    'dev_dialogue_options_app',
+    'dev_inventory_item_app',
+    'dev_quest_app',
+    'dev_starting_inventory_app',
+    'dev_subquest_app',
+    'game_area_app',
+    'game_character_app',
+    'game_dialogue_options_app',
+    'game_inventory_app',
+    'game_quest_app',
+    'game_stats_app',
+    'game_subquest_app',
+    'saved_game_app',
+    'settings_app',
+    'user_app',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -133,4 +154,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# AUTH_USER_MODEL = "user_app.User"
+AUTH_USER_MODEL = "user_app.User"
