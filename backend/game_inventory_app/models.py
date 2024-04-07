@@ -14,10 +14,10 @@ class GameInventory(models.Model):
         return f'Character: {self.char_id}, Item: {self.item_id}; Qty: {self.quantity}; Equipt: {self.equipt}'
     
     def change_quantity(self, method, quantity_added):
-        if method = 'add':
+        if method == 'add':
             self.quantity += quantity_added
             self.save()
-        elif method = 'sub':
+        elif method == 'sub':
             self.quantity -= quantity_added
             self.save()
     

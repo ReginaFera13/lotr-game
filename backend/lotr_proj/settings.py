@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'dev_character_app',
     'dev_dialogue_options_app',
     'dev_inventory_item_app',
+    'dev_npc_dialogue_app',
     'dev_quest_app',
     'dev_starting_inventory_app',
     'dev_subquest_app',
