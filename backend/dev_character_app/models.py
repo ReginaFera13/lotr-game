@@ -5,13 +5,17 @@ from .validators import validate_char_type
 # Create your models here.
 class DevCharacter(models.Model):
     # NOTE: char_id = id of character in LOTR API
-    char_id = models.BigIntegerField(unique=True)
+    char_id = models.CharField(unique=True)
     char_type = models.CharField(validators = [validate_char_type])
-    start_health = models.BigIntegerField()
-    start_stam = models.BigIntegerField()
-    start_armor = models.BigIntegerField()
-    start_dam = models.BigIntegerField()
-    start_att_sp = models.BigIntegerField()
+    merchant = models.BooleanField(default=False)
+    quest_giver = models.BooleanField(default=False)
+    enemy = models.BooleanField(default=False)
+    boss = models.BooleanField(default=False)
+    start_health = models.BigIntegerField(default=100)
+    start_stam = models.BigIntegerField(default=100)
+    start_armor = models.BigIntegerField(default=50)
+    start_dam = models.BigIntegerField(default=10)
+    start_att_sp = models.DecimalField(default=1.0, max_digits=3, decimal_places=2)
     
     def __str__(self):
         return f'{self.char_id}'

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'game_subquest_app',
     'saved_game_app',
     'settings_app',
+    'the_one_app',
     'user_app',
 ]
 
