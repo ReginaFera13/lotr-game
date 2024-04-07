@@ -1,8 +1,9 @@
 from django.core.exceptions import ValidationError
 import re
 
-def validate_name(name):
-    pass
-
 def validate_category(category):
-    pass
+    allowed_types = ['Weapon', 'Consumable', 'Helmet', 'Cloak', 'Chest', 'Legs', 'Footware']
+
+    if category not in allowed_types:
+        raise ValidationError("Invalid category or must be upper case")
+    return category

@@ -1,12 +1,12 @@
 from django.db import models
 from django.core import validators as v
-from .validators import validate_dialogue_text
+from .validators import validate_text
 from dev_npc_dialogue_app.models import DevNPCDialogue
 
 # Create your models here.
 class DevDialogueOptions(models.Model):
     # dialogue options for player
-    dialogue_text = models.TextField(validators = [validate_dialogue_text])
+    dialogue_text = models.TextField(validators = [validate_text])
     # which dialogue the player is responding to
     npc_dialogue_id = models.ForeignKey(DevNPCDialogue, on_delete=models.CASCADE)
     

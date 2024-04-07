@@ -8,7 +8,6 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST
 )
 from .serializers import DevAreaSerializer, DevArea
-from user_app.views import TokenReq
 
 # Create your views here.
 class All_areas(APIView):
