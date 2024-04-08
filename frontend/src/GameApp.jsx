@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Outlet, useNavigate, useLoaderData } from 'react-router-dom';
-import './App.css'
 
-function App() {
+function GameApp() {
 
   return (
     <>
@@ -11,4 +10,4 @@ function App() {
   )
 }
 
-export default App
+export default GameApp
