@@ -9,7 +9,7 @@ function LoginPage() {
         <h1 className='hobbiton-brushhand'>Login</h1>
         <Form className='flex-center'>
 
-            <Form.Group className="mb-3 center-text" controlId="formBasicEmail">
+            <Form.Group className="mb-3 center-text">
                 <Form.Label>Email address</Form.Label>
                 <Form.Control type="email" placeholder="Enter email" />
                 <Form.Text className="text-muted">
@@ -17,7 +17,7 @@ function LoginPage() {
                 </Form.Text>
             </Form.Group>
 
-            <Form.Group className="mb-3 center-text" controlId="formBasicPassword">
+            <Form.Group className="mb-3 center-text">
                 <Form.Label>Password</Form.Label>
                 <Form.Control type="password" placeholder="Password" />
             </Form.Group>

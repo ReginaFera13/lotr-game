@@ -11,6 +11,8 @@ import NewGamePage from "./pages/NewGamePage";
 import ContinuePage from "./pages/ContinuePage";
 import StatsPage from "./pages/StatsPage";
 import GameApp from "./GameApp";
+import StatsGrid from "./components/StatsGrid";
+import AGamePage from "./pages/AGamePage";
 
 const router = createBrowserRouter([{
     path:'/',
@@ -54,8 +56,13 @@ const router = createBrowserRouter([{
                 },
                 {
                     path: 'stats/',
-                    element: <StatsPage/>
+                    element: <StatsPage/>,
                 },
+                {
+                    // TODO: change path to ':id'
+                    path: 'gameid',
+                    element: <AGamePage/>
+                }
             ]
         },
         

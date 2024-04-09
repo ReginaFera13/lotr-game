@@ -6,7 +6,7 @@ function GameMenuPage() {
     return (
       <div className='flex-center'>
         <div className='flex-center-row screen-width'>
-          <div className='flex-center left'>
+          <div className='flex-center left-top'>
             <Button as={Link} to='/game/profile' variant="outline-success">
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
