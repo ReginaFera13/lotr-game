@@ -1,5 +1,6 @@
 * {
     border: 1px solid red;
+    box-sizing: border-box;
 }
 
 .flex-center {
@@ -67,4 +68,10 @@
 
 .text-right {
     text-align: right;
+}
+
+#canvas-container {
+    height: 99vh;
+    width: 99vw;
+    overflow: hidden;
 }
