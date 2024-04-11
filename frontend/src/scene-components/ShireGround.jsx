@@ -24,7 +24,7 @@ export function ShireGround() {
                 metalness={0.2}
                 displacementMap={elevations}
                 normalMap={normals}
-                displacementScale={3} //makes hills taller
+                displacementScale={3.5} //makes hills taller
             />
         </Plane>
     )
