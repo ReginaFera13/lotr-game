@@ -16,8 +16,6 @@ function HomePage() {
         <div className='disclaimer'>
           <h5 className='center-text'>Disclaimer</h5>
           <p>Game created for educational puposes to demonstate my learning. Lord of the Rings is a creation of J.R.R Tolkien and I claim no ownership.</p>
-          <img src="shire-heightmap.jpg" alt="" />
-          <img src="shire-normalmap.png" alt="" />
         </div>
       </div>
     )
