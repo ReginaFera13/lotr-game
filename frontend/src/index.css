@@ -56,6 +56,12 @@
     top: 15px;
 }
 
+.left-right {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+}
+
 #errorImgContainer {
     background-image: url('./images/404Error.png');
     background-color: rgb(255,255,255);
@@ -70,8 +76,23 @@
     text-align: right;
 }
 
-#canvas-container {
+/* #canvas-container, .full-screen {
     height: 99vh;
     width: 99vw;
     overflow: hidden;
+} */
+
+.absolute {
+    position: absolute;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.full-screen {
+    width: 100%;
+    height: 100%;
 }

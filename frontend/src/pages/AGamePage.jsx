@@ -13,12 +13,15 @@ import Bush from '../scene-components/Bush'
 import Daisies from '../scene-components/Daisies'
 import FlowerBush from '../scene-components/FlowerBush'
 import SunsetFlowerBush from '../scene-components/SunsetFlowerBush'
+import Hobbits from '../scene-components/Hobbits'
+import Gandalf from '../scene-components/Gandalf'
+import GameUI from './GameUI'
 
 function AGamePage() {
 
     return (
-        <div id="canvas-container">
-            <Canvas>
+        <div id="canvas-container" style={{ position: 'relative', width: '100%', height: '100vh' }}>
+            <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }}>
                 <OrbitControls/>
                 <Sky sunPosition={[100, 100, 20]}/>
                 <ambientLight intensity={0.6}/>
@@ -33,9 +36,12 @@ function AGamePage() {
                         <WoodRaft/>
                         <FlowerBush/>
                         <SunsetFlowerBush/>
+                        <Hobbits/>
+                        <Gandalf/>
                     </Suspense>
                 </Physics>
             </Canvas>
+            <GameUI/>
         </div>
     )
   }

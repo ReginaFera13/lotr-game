@@ -14,7 +14,7 @@ export function ShireGround() {
         <Plane
             rotation={[-Math.PI / 2, 0, 0]}
             position={[0,0,0]}
-            args={[50, 50, 2048, 2048]}
+            args={[50, 50, 1024, 1024]}
         >
             <meshStandardMaterial 
                 attach='material'
