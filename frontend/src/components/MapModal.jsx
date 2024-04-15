@@ -4,8 +4,14 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
 function MapModal(props) {
+    const { handleEnterChapter } = props;
     const [infowindowShown, setInfowindowShown] = useState(null);
     const [mapZoom, setMapZoom] = useState(7.5);
+    const [overlayVisible, setOverlayVisible] = useState(true);
+
+    const toggleOverlay = () => {
+        setOverlayVisible(!overlayVisible);
+    };
 
     const toggleInfoWindow = (markerId) => {
         setInfowindowShown(markerId === infowindowShown ? null : markerId);
@@ -32,6 +38,10 @@ function MapModal(props) {
        
     ]
 
+    const handleEnterChapterClick = (markerId) => {
+        props.onEnterChapter(markerId);
+    };
+
     return (
         <Modal {...props} fullscreen={true}>
             <Modal.Header closeButton>
@@ -40,10 +50,13 @@ function MapModal(props) {
             <Modal.Body>
                 <div className='flex-center relative'>
                     <p>Overlay msut be toggled off to use the map.</p>
+                    <Button variant="outline-success" onClick={toggleOverlay}>Toogle Overlay</Button>
                 </div>
                 <div className='flex-center relative'>
-                    <img className='overlay-size absolute z-2 left' src="/src/assets/middle_earth_map_overlay.png" alt="middle earth map overlay" />
-                    <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
+                    {overlayVisible && (
+                        <img id='overlay' className='overlay-size absolute z-2 left' src="/src/assets/middle_earth_map_overlay.png" alt="middle earth map overlay" />
+                    )}
+                    <APIProvider apiKey={'AIzaSyBxvhkDu9gaszAmTVBWxgonv0Q6LWEGxoA'}>
                         <Map 
                             defaultCenter={{lat: 38.608884836841014, lng: -6.637687521029093}}
                             zoom={mapZoom}
@@ -67,6 +80,7 @@ function MapModal(props) {
                                             onCloseClick={closeInfoWindow}
                                         >
                                             <h1>{marker.title}</h1>
+                                            <Button variant="outline-success" onClick={() => handleEnterChapterClick(marker.id)}>Enter Chapter</Button>
                                         </InfoWindow>
                                     )}
                                 </React.Fragment>

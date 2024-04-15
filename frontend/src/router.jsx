@@ -60,7 +60,7 @@ const router = createBrowserRouter([{
                 },
                 {
                     // TODO: change path to ':id'
-                    path: 'gameid',
+                    path: ':id/',
                     element: <AGamePage/>
                 }
             ]

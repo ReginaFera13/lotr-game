@@ -1,12 +1,20 @@
 import { useState } from 'react'
-import { Outlet, useNavigate, useLoaderData } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import './App.css'
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  const contextObj = {
+    user,
+    setUser
+  }
+  
+  console.log(user)
 
   return (
     <>
-      <Outlet />
+      <Outlet context={contextObj} />
     </>
   )
 }

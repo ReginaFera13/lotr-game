@@ -13,10 +13,11 @@ from .serializers import DevCharacterSerializer, DevCharacter
 class All_characters(APIView):
     def get(self, request):
         try:
-            all_chars = DevCharacterSerializer(DevCharacter.order_by("id"), many=True)
-            return Response(all_chars.data, status=HTTP_200_OK)
+            all_chars = DevCharacter.objects.order_by("id")
+            serializer = DevCharacterSerializer(all_chars, many=True)
+            return Response(serializer.data, status=HTTP_200_OK)
         except Exception as e:
-            return Response(e, status=HTTP_400_BAD_REQUEST)
+            return Response(str(e), status=HTTP_400_BAD_REQUEST)
 
     def post(self, request):
         ser_chars = DevCharacterSerializer(data = request.data)

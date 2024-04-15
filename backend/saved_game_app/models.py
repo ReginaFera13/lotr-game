@@ -5,10 +5,9 @@ from user_app.models import User
 
 # Create your models here.
 class SavedGame(models.Model):
-    diff_level = models.CharField(validators = [v.MinLengthValidator(4), v.MaxLengthValidator(6), validate_diff_level])
-    save_date = models.TimeField()
-    scene_state = models.JSONField()
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    diff_level = models.CharField(validators = [v.MinLengthValidator(3), v.MaxLengthValidator(7), validate_diff_level])
+    scene_state = models.JSONField(blank=True, null=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
     
     def __str__(self):
         return f'User: {self.user_id}; Difficulty: {self.diff_level}; Last Saved: {self.save_date}'

@@ -1,13 +1,40 @@
-import { useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
+import axios from "axios";
 import Button from 'react-bootstrap/Button';
 import MapModal from '../components/MapModal';
 import InventoryModal from '../components/InventoryModal';
 import QuestModal from '../components/QuestModal';
+import CharacterCard from '../components/CharacterCard';
 
-function GameUI() {
+function GameUI( {handleEnterChapter, team} ) {
     const [mapModalShow, setMapModalShow] = useState(false)
     const [inventoryModalShow, setInventoryModalShow] = useState(false)
     const [questModalShow, setQuestModalShow] = useState(false)
+    const [teamInfo, setTeamInfo] = useState([])
+
+    const getTeamInfo = async (team) => {
+        if (team) {
+            let allCharInfo = []
+            for (let i = 0; i < team.length; i++) {
+                const theOneId = team[i].char_id
+                const myId = team[i].id
+                const reponse = await axios.get(`http://127.0.0.1:8000/api/v1/the_one_api/${theOneId}/`)
+                const char = reponse.data.docs[0] 
+                allCharInfo[myId] = char;
+            }
+            setTeamInfo(allCharInfo)
+        } else {
+            console.log("Team is undefined")
+        }
+    }
+
+    useEffect(() => {
+        if (team && team.length > 0) {
+            getTeamInfo(team);
+        }
+    }, [team]);
+
+    console.log(team)
 
     return (
         <>
@@ -31,9 +58,19 @@ function GameUI() {
                 </Button>
             </div>
             <div>
-                {/* TODO: Team cards here */}
+                {team.map(c =>
+                    <CharacterCard 
+                        key={c.id}
+                        id={c.id}
+                        start_armor={c.start_armor}
+                        start_att_sp={c.start_att_sp}
+                        start_dam={c.start_dam}
+                        start_health={c.start_health}
+                        start_stam={c.start_stam}                     
+                    />
+                )}
             </div>
-            <MapModal show={mapModalShow} onHide={() => setMapModalShow(false)}/>
+            <MapModal show={mapModalShow} onHide={() => setMapModalShow(false)} onEnterChapter={handleEnterChapter}/>
             <InventoryModal show={inventoryModalShow} onHide={() => setInventoryModalShow(false)}/>
             <QuestModal show={questModalShow} onHide={() => setQuestModalShow(false)}/>
         </>

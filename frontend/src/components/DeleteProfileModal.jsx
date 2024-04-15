@@ -1,13 +1,26 @@
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import { deleteProfile } from '../utilities';
 
 function DeleteProfileModal(props) {
+    const {setUserInfo, setUser} = useOutletContext()
+    const navigate = useNavigate()
 
     // TODO: deleteProfile
-    const deleteProfile = () => {
-        return 
-    }
+    const handleDeleteProfile = async () => {
+        try {
+            await deleteProfile();
+            setUserInfo([]);
+            setUser([]);
+            navigate('/')
+            props.onDelete(); // Notify parent component about the deletion
+        } catch (error) {
+            console.error('Error deleting profile:', error);
+            // Handle deletion failure
+        }
+    };
 
     return (
         <Modal
@@ -24,10 +37,8 @@ function DeleteProfileModal(props) {
                     <Form className='flex-center'>
                         <Form.Group className="mb-3 center-text flex-center">
                             <Form.Label>Are you sure you want to PERMANENTLY delete your profile?</Form.Label>
-                            <Form.Text>Type "DELETE" and submit.</Form.Text>
-                            <Form.Control type="text" placeholder="DELETE" />
                         </Form.Group>
-                        <Button onClick={() => deleteProfile()} variant="outline-danger" size="lg">Delete Pofile</Button>
+                        <Button onClick={() => handleDeleteProfile()} variant="outline-danger" size="lg">Delete Pofile</Button>
                     </Form>
             </Modal.Body>
             <Modal.Footer>

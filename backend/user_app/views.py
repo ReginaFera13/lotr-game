@@ -37,7 +37,7 @@ class Register_admin(APIView):
             user.is_staff = True
             user.is_superuser = True
             user.save()
-            return Response({"user":user.email, "diplay name": user.display_name, "token":token.key}, status=HTTP_201_CREATED)
+            return Response({"user":user.email, "display name": user.display_name, "token":token.key}, status=HTTP_201_CREATED)
         return Response(creds_or_err.message_dict, status=HTTP_400_BAD_REQUEST)
 
 
@@ -49,10 +49,10 @@ class Register(APIView):
             user.is_staff = False
             user.is_superuser = False
             user.save()
-            return Response({"user":user.email, "diplay name": user.display_name, "token":token.key}, status=HTTP_201_CREATED)
+            return Response({"user":user.email, "display name": user.display_name, "token":token.key}, status=HTTP_201_CREATED)
         return Response(creds_or_err.message_dict, status=HTTP_400_BAD_REQUEST) 
 
-class Log_in(APIView):
+class Login(APIView):
     def post(self, request):
         data = request.data.copy()
         data['username'] = request.data.get("email")
@@ -60,20 +60,31 @@ class Log_in(APIView):
         if user:
             token, created = Token.objects.get_or_create(user = user)
             login(request, user)
-            return Response({"user":user.email, "diplay name": user.display_name, "token":token.key})
+            return Response({"user":user.email, "display_name": user.display_name, "token":token.key})
         return Response("No user matching these credentials", status=HTTP_404_NOT_FOUND)
 
 class TokenReq(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-class Info(TokenReq):
+class Info(APIView):
     def get(self, request):
-        print(request.user)
-        return Response(request.user)
+        return Response({"email": request.user.email, "display_name": request.user.display_name, 'id': request.user.id})
 
-class Log_out(TokenReq):
+class Logout(APIView):
     def post(self, request):
         request.user.auth_token.delete()
         logout(request)
         return Response(status=HTTP_204_NO_CONTENT)
+    
+class DeleteUser(APIView):
+    def delete(self, request):
+        try:
+            user = request.user
+            user.delete()
+            logout(request)
+            return Response("User account deleted successfully", status=HTTP_204_NO_CONTENT)
+        except Http404:
+            return Response("User not found", status=HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(str(e), status=HTTP_400_BAD_REQUEST)
