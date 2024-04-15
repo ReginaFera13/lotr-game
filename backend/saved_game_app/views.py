@@ -34,8 +34,6 @@ class A_saved_game(APIView):
 
     def put(self, request, id):
         game = get_object_or_404(SavedGame, id=id)
-        if 'save_date' in request.data and request.data['save_date']:
-            game.change_save_date()
         if 'scene_state' in request.data and request.data['scene_state']:
             game.change_scene_state()
         ser_game = SavedGameSerializer(game, data=request.data, partial=True)
