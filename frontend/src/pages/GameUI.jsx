@@ -6,43 +6,43 @@ import InventoryModal from '../components/InventoryModal';
 import QuestModal from '../components/QuestModal';
 import CharacterCard from '../components/CharacterCard';
 
-function GameUI( {handleEnterChapter, team} ) {
+function GameUI( {handleEnterChapter, team, teamInfo, teamStats, player, setPlayer} ) {
     const [mapModalShow, setMapModalShow] = useState(false)
     const [inventoryModalShow, setInventoryModalShow] = useState(false)
     const [questModalShow, setQuestModalShow] = useState(false)
-    const [teamInfo, setTeamInfo] = useState([])
 
-    const getTeamInfo = async (team) => {
-        if (team) {
-            let allCharInfo = []
-            for (let i = 0; i < team.length; i++) {
-                const theOneId = team[i].char_id
-                const myId = team[i].id
-                const reponse = await axios.get(`http://127.0.0.1:8000/api/v1/the_one_api/${theOneId}/`)
-                const char = reponse.data.docs[0] 
-                allCharInfo[myId] = char;
-            }
-            setTeamInfo(allCharInfo)
-        } else {
-            console.log("Team is undefined")
-        }
-    }
-
-    useEffect(() => {
-        if (team && team.length > 0) {
-            getTeamInfo(team);
-        }
-    }, [team]);
-
-    console.log(team)
+    
 
     return (
         <>
-            <Button onClick={() => setMapModalShow(true)} variant="secondary" className="absolute left-top">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-map" viewBox="0 0 16 16">
-                    <path fillRule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.5.5 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103M10 1.91l-4-.8v12.98l4 .8zm1 12.98 4-.8V1.11l-4 .8zm-6-.8V1.11l-4 .8v12.98z"/>
-                </svg>
-            </Button>
+            <div className="absolute left-top">
+                <Button onClick={() => setMapModalShow(true)} variant="secondary" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-map" viewBox="0 0 16 16">
+                        <path fillRule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.5.5 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103M10 1.91l-4-.8v12.98l4 .8zm1 12.98 4-.8V1.11l-4 .8zm-6-.8V1.11l-4 .8v12.98z"/>
+                    </svg>
+                </Button>
+                <div className='spacer-h10'></div>
+                <div>
+                    {teamStats.map(c =>
+                        <CharacterCard 
+                            key={c.char_id}
+                            id={c.char_id}
+                            armor={c.armor}
+                            att_sp={c.att_sp}
+                            dam={c.damage}
+                            health={c.health}
+                            stam={c.stamina}
+                            exp={c.exp}
+                            level={c.level}
+                            curr_char={c.curr_char}
+                            team={team}
+                            teamInfo={teamInfo}
+                            player={player} 
+                            setPlayer={setPlayer}                    
+                        />
+                    )}
+                </div>
+            </div>
             <div className="absolute left-right flex-center">
                 <Button onClick={() => setInventoryModalShow(true)} variant="secondary" >
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-backpack4" viewBox="0 0 16 16">
@@ -57,19 +57,7 @@ function GameUI( {handleEnterChapter, team} ) {
                     </svg>
                 </Button>
             </div>
-            <div>
-                {team.map(c =>
-                    <CharacterCard 
-                        key={c.id}
-                        id={c.id}
-                        start_armor={c.start_armor}
-                        start_att_sp={c.start_att_sp}
-                        start_dam={c.start_dam}
-                        start_health={c.start_health}
-                        start_stam={c.start_stam}                     
-                    />
-                )}
-            </div>
+            
             <MapModal show={mapModalShow} onHide={() => setMapModalShow(false)} onEnterChapter={handleEnterChapter}/>
             <InventoryModal show={inventoryModalShow} onHide={() => setInventoryModalShow(false)}/>
             <QuestModal show={questModalShow} onHide={() => setQuestModalShow(false)}/>

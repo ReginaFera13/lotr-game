@@ -29,7 +29,7 @@ class All_game_characters(APIView):
 
 class A_game_character(APIView):
     def get(self, request, id):
-        char = get_object_or_404(GameCharacter, id = id)
+        char = get_object_or_404(GameCharacter, char_id = id)
         return Response(GameCharacterSerializer(char).data)
     
     def put(self, request, id):

@@ -17,11 +17,14 @@ import SunsetFlowerBush from '../scene-components/SunsetFlowerBush'
 import Hobbits from '../scene-components/Hobbits'
 import Gandalf from '../scene-components/Gandalf'
 import GameUI from './GameUI'
+import { saveAGame } from '../utilities'
 
 function AGamePage() {
-    const [chapter, setChapter] = useState(1);
+    const [chapter, setChapter] = useState(1)
     const [player, setPlayer] = useState()
     const [team, setTeam] = useState([])
+    const [teamInfo, setTeamInfo] = useState([])
+    const [teamStats, setTeamStats] = useState([])
     const [npcs, setNpcs] = useState([])
 
     const handleEnterChapter = (chapterId) => {
@@ -33,50 +36,84 @@ function AGamePage() {
             chapter: chapter,
             player: player,
             team: team,
-            npcs: npcs
+            teamInfo: teamInfo,
+            teamStats: teamStats,
+            npcs: npcs,
         };
-
-        // Convert the gameState object to JSON string
         const scene_state = JSON.stringify(gameState);
-
-        // Perform any action with the JSON string, like saving to local storage or sending to a server
-        console.log(scene_state);
+        saveAGame(scene_state) 
     };
 
     useEffect(() => {
-        // Call the saveGameState function whenever any of the states change
         saveGameState();
-    }, [chapter, player, team, npcs]);
+    }, [chapter, player, team, teamInfo, teamStats, npcs]);
 
-    const addAllCharsToDB = async () => {
+    const fetchCharacters = async (charIds) => {
         try {
-            // Fetch all characters from the dev_characters endpoint
-            const response = await axios.get('http://127.0.0.1:8000/api/v1/dev_characters/');
-            const devCharacters = response.data;
-    
-            // Iterate over each character
-            for (const devCharacter of devCharacters) {
-                // Map the fields from DevCharacter to GameCharacter
-                const gameCharacter = {
-                    char_id: devCharacter.id, // Assuming devCharacter.id is the primary key
-                    health: devCharacter.start_health,
-                    stamina: devCharacter.start_stam,
-                    damage: devCharacter.start_dam,
-                    armor: devCharacter.start_armor,
-                    att_sp: devCharacter.start_att_sp,
-                    // You may need to set other fields based on your application logic
-                };
-    
-                // Send a POST request to add the character to the game_characters endpoint
-                const gameCharResponse = await axios.post('http://127.0.0.1:8000/api/v1/game_characters/', gameCharacter);
-                console.log('Character added to the game:', gameCharResponse.data);
-            }
+            const characters = await Promise.all(charIds.map(async (charId) => {
+                const response = await axios.get(`http://127.0.0.1:8000/api/v1/dev_characters/${charId}/`);
+                return response.data;
+            }));
+            setTeam(characters);
         } catch (error) {
-            console.error('Error adding characters to the game:', error);
+            console.error("Error fetching characters:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (chapter === 1) {
+            fetchCharacters([4]);
+        }
+    }, [chapter]);
+
+    //, 22, 11, 44
+
+    const getTeamInfo = async (team) => {
+        if (team) {
+            let allCharInfo = []
+            for (let i = 0; i < team.length; i++) {
+                const theOneId = team[i].char_id
+                const myId = team[i].id
+                const reponse = await axios.get(`http://127.0.0.1:8000/api/v1/the_one_api/${theOneId}/`)
+                const char = reponse.data.docs[0] 
+                allCharInfo[myId] = char;
+            }
+            setTeamInfo(allCharInfo)
+        } else {
+            console.log("Team is undefined")
         }
     }
 
-    // addAllCharsToDB();
+    const getTeamStats = async (team) => {
+        try {
+            const teamStatsObject = []; // Array to store stats objects
+        
+            // Iterate through each character in the team
+            for (const character of team) {
+                const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_characters/${character.id}`);
+                const stats = response.data;
+                
+                // Push the stats object to the teamStatsObject array
+                teamStatsObject.push(stats);
+            }
+    
+            // Set the team stats array
+            setTeamStats(teamStatsObject);
+        } catch (error) {
+            console.error("Error fetching team stats:", error);
+        }
+    }
+
+    useEffect(() => {
+        if (team && team.length > 0) {
+            getTeamInfo(team);
+            getTeamStats(team);
+        }
+    }, [team]);
+    
+    console.log('team', team)
+    console.log('teamInfo', teamInfo)
+    console.log('teamStats', teamStats)
 
     if (chapter == 1) {
         return (
@@ -101,7 +138,7 @@ function AGamePage() {
                         </Suspense>
                     </Physics>
                 </Canvas>
-                <GameUI handleEnterChapter={handleEnterChapter} team={team}/>
+                <GameUI handleEnterChapter={handleEnterChapter} team={team} teamInfo={teamInfo} teamStats={teamStats} player={player} setPalyer={setPlayer}/>
             </div>
         )
     }

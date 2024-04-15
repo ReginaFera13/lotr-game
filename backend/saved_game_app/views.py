@@ -35,11 +35,11 @@ class A_saved_game(APIView):
     def put(self, request, id):
         game = get_object_or_404(SavedGame, id=id)
         if 'scene_state' in request.data and request.data['scene_state']:
-            game.change_scene_state()
+            game.change_scene_state(request.data['scene_state'])
         ser_game = SavedGameSerializer(game, data=request.data, partial=True)
         if ser_game.is_valid():
             ser_game.save()
-            return Response(status=HTTP_204_NO_CONTENT)
+            return Response(status=HTTP_200_OK)
         return Response(ser_game.errors, status=HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):

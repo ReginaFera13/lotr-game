@@ -68,3 +68,13 @@ export const createAGame = async(diff, userId)=> {
   alert("Failed to create game")
   return null
 }
+
+export const saveAGame = async(scene_state)=> {
+  let response = await api.put('saved_games/1/', {
+    'scene_state':scene_state,
+  })
+  if (response.status === 200){
+    return response.data
+  }
+  return null
+}
