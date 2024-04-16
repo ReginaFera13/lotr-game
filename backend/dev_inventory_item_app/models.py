@@ -5,7 +5,7 @@ from dev_area_app.validators import validate_name
 
 # Create your models here.
 class DevInventoryItem(models.Model):
-    name = models.CharField(unique=True, validators = [v.MinLengthValidator(4), v.MaxLengthValidator(50), validate_name])
+    name = models.CharField(unique=True, validators = [v.MinLengthValidator(3), v.MaxLengthValidator(50), validate_name])
     category = models.CharField(validators = [validate_category])
     stat = models.BigIntegerField()
     weight = models.DecimalField(max_digits=4, decimal_places=2)

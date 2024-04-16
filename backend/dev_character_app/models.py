@@ -18,7 +18,7 @@ class DevCharacter(models.Model):
     start_att_sp = models.DecimalField(default=1.0, max_digits=3, decimal_places=2)
     
     def __str__(self):
-        return f'{self.char_id}'
+        return f'{self.id}'
     
     def change_health(self, new_health):
         self.start_health = new_health

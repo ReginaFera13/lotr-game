@@ -40,7 +40,7 @@ function CharacterCard({id, armor, att_sp, dam, health, stam, exp, level, curr_c
                         </Row>
                     </Container>
                 </Card.Text>
-                <Button className='font-size-10' variant="outline-success" size="sm">Set Active</Button>
+                {/* <Button className='font-size-10' variant="outline-success" size="sm">Set Active</Button> */}
             </Card.Body>
         </Card>
     )

@@ -123,6 +123,19 @@ function AGamePage() {
         }
     }
 
+    const setPlayerActive = async (player) => {
+        try {
+            const playerId = player[0].id;
+            // Define the data object containing the field you want to update
+            const data = { curr_char: true }; // or false, depending on your logic
+            // Make the PUT request with the correct data object
+            const response = await axios.put(`http://127.0.0.1:8000/api/v1/game_characters/${playerId}/`, data);
+            console.log(response);
+        } catch (error) {
+            console.error("Error setting player to active:", error);
+        }
+    };
+
     const getPlayerStats = async (player) => {
         try {
             const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_characters/${player[0].id}`);
@@ -142,6 +155,7 @@ function AGamePage() {
 
     useEffect(() => {
         if (player && player.length > 0) {
+            setPlayerActive(player)
             getPlayerInfo(player);
             getPlayerStats(player);
         }

@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -13,8 +14,13 @@ from .serializers import GameInventorySerializer, GameInventory
 class All_game_character_inventories(APIView):
     def get(self, request):
         try:
-            all_chars = GameInventorySerializer(GameInventory.order_by("id"), many=True)
-            return Response(all_chars.data, status=HTTP_200_OK)
+            char_id = request.query_params.get('char_id')  # Extract char_id from query parameters
+            if char_id:
+                all_inventory = GameInventory.objects.filter(char_id=char_id).order_by("id")
+            else:
+                all_inventory = GameInventory.objects.all().order_by("id")
+            serializer = GameInventorySerializer(all_inventory, many=True)
+            return Response(serializer.data, status=HTTP_200_OK)
         except Exception as e:
             return Response(e, status=HTTP_400_BAD_REQUEST)
 

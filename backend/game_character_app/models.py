@@ -44,8 +44,8 @@ class GameCharacter(models.Model):
         self.alive = not self.alive
         self.save()
     
-    def change_curr_char(self):
-        self.curr_char = not self.curr_char
+    def change_curr_char(self, new_curr_char):
+        self.curr_char = new_curr_char
         self.save()
     
     def change_level(self):

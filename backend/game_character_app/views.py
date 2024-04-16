@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -33,32 +34,32 @@ class A_game_character(APIView):
         return Response(GameCharacterSerializer(char).data)
     
     def put(self, request, id):
-        char = get_object_or_404(GameCharacter, id = id)
-        if 'health' in request.data and request.data['health']:
-            char.change_health()
-        if 'stamina' in request.data and request.data['stamina']:
-            char.change_stamina()
-        if 'damage' in request.data and request.data['damage']:
-            char.change_damage()
-        if 'armor' in request.data and request.data['armor']:
-            char.change_armor()
-        if 'att_sp' in request.data and request.data['att_sp']:
-            char.change_att_sp()
-        if 'alive' in request.data and request.data['alive']:
+        char = get_object_or_404(GameCharacter, char_id=id)
+        if 'health' in request.data:
+            char.change_health(request.data['health'])
+        if 'stamina' in request.data:
+            char.change_stamina(request.data['stamina'])
+        if 'damage' in request.data:
+            char.change_damage(request.data['damage'])
+        if 'armor' in request.data:
+            char.change_armor(request.data['armor'])
+        if 'att_sp' in request.data:
+            char.change_att_sp(request.data['att_sp'])
+        if 'alive' in request.data:
             char.change_alive()
-        if 'curr_char' in request.data and request.data['curr_char']:
-            char.change_curr_char()
-        if 'level' in request.data and request.data['level']:
-            char.change_level()
-        if 'exp' in request.data and request.data['exp']:
-            char.change_exp()
-        ser_char = GameCharacterSerializer(char, data = request.data, partial = True)
+        if 'curr_char' in request.data:
+            char.change_curr_char(request.data['curr_char'])
+        if 'level' in request.data:
+            char.change_level(request.data['level'])
+        if 'exp' in request.data:
+            char.change_exp(request.data['exp'])
+        ser_char = GameCharacterSerializer(char, data=request.data, partial=True)
         if ser_char.is_valid():
             ser_char.save()
-            return Response(status=HTTP_204_NO_CONTENT)
+            return Response(status=HTTP_200_OK)
         return Response(ser_char.errors, status=HTTP_400_BAD_REQUEST)
     
     def delete(self, request, id):
-        char = get_object_or_404(GameCharacter, id = id)
+        char = get_object_or_404(GameCharacter, char_id = id)
         char.delete()
         return Response(status=HTTP_204_NO_CONTENT)
