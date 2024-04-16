@@ -6,7 +6,7 @@ import InventoryModal from '../components/InventoryModal';
 import QuestModal from '../components/QuestModal';
 import CharacterCard from '../components/CharacterCard';
 
-function GameUI( {handleEnterChapter, team, teamInfo, teamStats, player, setPlayer} ) {
+function GameUI( {handleEnterChapter, team, teamInfo, teamStats, player, setPlayer, playerInfo, playerStats} ) {
     const [mapModalShow, setMapModalShow] = useState(false)
     const [inventoryModalShow, setInventoryModalShow] = useState(false)
     const [questModalShow, setQuestModalShow] = useState(false)
@@ -59,7 +59,7 @@ function GameUI( {handleEnterChapter, team, teamInfo, teamStats, player, setPlay
             </div>
             
             <MapModal show={mapModalShow} onHide={() => setMapModalShow(false)} onEnterChapter={handleEnterChapter}/>
-            <InventoryModal show={inventoryModalShow} onHide={() => setInventoryModalShow(false)}/>
+            <InventoryModal show={inventoryModalShow} onHide={() => setInventoryModalShow(false)} player={player} playerInfo={playerInfo} playerStats={playerStats} />
             <QuestModal show={questModalShow} onHide={() => setQuestModalShow(false)}/>
         </>
     )

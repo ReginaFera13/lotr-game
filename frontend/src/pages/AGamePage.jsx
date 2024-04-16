@@ -22,6 +22,8 @@ import { saveAGame } from '../utilities'
 function AGamePage() {
     const [chapter, setChapter] = useState(1)
     const [player, setPlayer] = useState()
+    const [playerInfo, setPlayerInfo] = useState([])
+    const [playerStats, setPlayerStats] = useState([])
     const [team, setTeam] = useState([])
     const [teamInfo, setTeamInfo] = useState([])
     const [teamStats, setTeamStats] = useState([])
@@ -48,7 +50,7 @@ function AGamePage() {
         saveGameState();
     }, [chapter, player, team, teamInfo, teamStats, npcs]);
 
-    const fetchCharacters = async (charIds) => {
+    const fetchTeam = async (charIds) => {
         try {
             const characters = await Promise.all(charIds.map(async (charId) => {
                 const response = await axios.get(`http://127.0.0.1:8000/api/v1/dev_characters/${charId}/`);
@@ -60,13 +62,24 @@ function AGamePage() {
         }
     };
 
+    const fetchPlayer = async (charId) => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/v1/dev_characters/${charId}/`);
+            const character = response.data;
+            setPlayer([character]);
+        } catch (error) {
+            console.error("Error fetching characters:", error);
+        }
+    };
+
     useEffect(() => {
         if (chapter === 1) {
-            fetchCharacters([4]);
+            fetchTeam([4]);
+            fetchPlayer(4);
         }
     }, [chapter]);
 
-    //, 22, 11, 44
+    //, 22-sam, 11-merry, 44-pippin
 
     const getTeamInfo = async (team) => {
         if (team) {
@@ -84,21 +97,37 @@ function AGamePage() {
         }
     }
 
+    const getPlayerInfo = async (player) => {
+        console.log('player', player)
+        if (player) {
+            const theOneId = player[0].char_id
+            const response = await axios.get(`http://127.0.0.1:8000/api/v1/the_one_api/${theOneId}/`)
+            const char = response.data.docs[0] 
+            setPlayerInfo([char])
+        } else {
+            console.log("Player is undefined")
+        }
+    }
+
     const getTeamStats = async (team) => {
         try {
-            const teamStatsObject = []; // Array to store stats objects
-        
-            // Iterate through each character in the team
+            const teamStatsObject = [];        
             for (const character of team) {
                 const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_characters/${character.id}`);
                 const stats = response.data;
-                
-                // Push the stats object to the teamStatsObject array
                 teamStatsObject.push(stats);
             }
-    
-            // Set the team stats array
             setTeamStats(teamStatsObject);
+        } catch (error) {
+            console.error("Error fetching team stats:", error);
+        }
+    }
+
+    const getPlayerStats = async (player) => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_characters/${player[0].id}`);
+            const stats = response.data;
+            setPlayerStats([stats]);
         } catch (error) {
             console.error("Error fetching team stats:", error);
         }
@@ -110,10 +139,20 @@ function AGamePage() {
             getTeamStats(team);
         }
     }, [team]);
+
+    useEffect(() => {
+        if (player && player.length > 0) {
+            getPlayerInfo(player);
+            getPlayerStats(player);
+        }
+    }, [player]);
     
-    console.log('team', team)
-    console.log('teamInfo', teamInfo)
-    console.log('teamStats', teamStats)
+    // console.log('team', team)
+    // console.log('teamInfo', teamInfo)
+    // console.log('teamStats', teamStats)
+    console.log('player', player)
+    console.log('playerInfo', playerInfo)
+    console.log('playerStats', playerStats)
 
     if (chapter == 1) {
         return (
@@ -138,7 +177,7 @@ function AGamePage() {
                         </Suspense>
                     </Physics>
                 </Canvas>
-                <GameUI handleEnterChapter={handleEnterChapter} team={team} teamInfo={teamInfo} teamStats={teamStats} player={player} setPalyer={setPlayer}/>
+                <GameUI handleEnterChapter={handleEnterChapter} team={team} teamInfo={teamInfo} teamStats={teamStats} player={player} setPalyer={setPlayer} playerInfo={playerInfo} playerStats={playerStats} />
             </div>
         )
     }
