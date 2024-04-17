@@ -10,8 +10,6 @@ import PicnicTable from '../scene-components/PicnicTable'
 import WoodFence from '../scene-components/WoodFence'
 import WoodArch from '../scene-components/WoodArch'
 import WoodRaft from '../scene-components/WoodRaft'
-import Bush from '../scene-components/Bush'
-import Daisies from '../scene-components/Daisies'
 import FlowerBush from '../scene-components/FlowerBush'
 import SunsetFlowerBush from '../scene-components/SunsetFlowerBush'
 import Hobbits from '../scene-components/Hobbits'
@@ -23,7 +21,7 @@ function AGamePage() {
     const [chapter, setChapter] = useState(1)
     const [player, setPlayer] = useState()
     const [playerInfo, setPlayerInfo] = useState([])
-    const [playerStats, setPlayerStats] = useState([])
+    const [playerStats, setPlayerStats] = useState()
     const [team, setTeam] = useState([])
     const [teamInfo, setTeamInfo] = useState([])
     const [teamStats, setTeamStats] = useState([])
@@ -37,6 +35,8 @@ function AGamePage() {
         const gameState = {
             chapter: chapter,
             player: player,
+            playerInfo: playerInfo,
+            playerStats: playerStats,
             team: team,
             teamInfo: teamInfo,
             teamStats: teamStats,
@@ -140,7 +140,7 @@ function AGamePage() {
         try {
             const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_characters/${player[0].id}`);
             const stats = response.data;
-            setPlayerStats([stats]);
+            setPlayerStats(stats);
         } catch (error) {
             console.error("Error fetching team stats:", error);
         }
@@ -168,6 +168,16 @@ function AGamePage() {
     console.log('playerInfo', playerInfo)
     console.log('playerStats', playerStats)
 
+    const renderUI = () => {
+        if (team && teamStats && teamInfo && player && playerStats && playerInfo) {
+            return (
+                <GameUI handleEnterChapter={handleEnterChapter} team={team} teamInfo={teamInfo} teamStats={teamStats} player={player} setPalyer={setPlayer} playerInfo={playerInfo} playerStats={playerStats} />
+            )
+        } else {
+            return null
+        } 
+    }
+
     if (chapter == 1) {
         return (
             <div id="canvas-container" style={{ position: 'relative', width: '100%', height: '100vh' }}>
@@ -191,7 +201,7 @@ function AGamePage() {
                         </Suspense>
                     </Physics>
                 </Canvas>
-                <GameUI handleEnterChapter={handleEnterChapter} team={team} teamInfo={teamInfo} teamStats={teamStats} player={player} setPalyer={setPlayer} playerInfo={playerInfo} playerStats={playerStats} />
+                {renderUI()}
             </div>
         )
     }

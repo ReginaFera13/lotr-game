@@ -8,12 +8,16 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 
 function CharacterCard({id, armor, att_sp, dam, health, stam, exp, level, curr_char, team, teamInfo, player, setPlayer}) {
 
-    const name = teamInfo[id].name
+    const name = () => {
+        if (teamInfo) {
+            return teamInfo[id].name
+        }
+    }
 
     return (
         <Card style={{ width: '15rem' }}>
             <Card.Body>
-                <Card.Title className='font-size-12'>{name}</Card.Title>
+                <Card.Title className='font-size-12'>{name()}</Card.Title>
                 <Card.Text>
                     <Container>
                         <Row>

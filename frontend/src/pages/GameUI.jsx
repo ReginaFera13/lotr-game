@@ -11,19 +11,11 @@ function GameUI( {handleEnterChapter, team, teamInfo, teamStats, player, setPlay
     const [inventoryModalShow, setInventoryModalShow] = useState(false)
     const [questModalShow, setQuestModalShow] = useState(false)
 
-    
-
-    return (
-        <>
-            <div className="absolute left-top">
-                <Button onClick={() => setMapModalShow(true)} variant="secondary" >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-map" viewBox="0 0 16 16">
-                        <path fillRule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.5.5 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103M10 1.91l-4-.8v12.98l4 .8zm1 12.98 4-.8V1.11l-4 .8zm-6-.8V1.11l-4 .8v12.98z"/>
-                    </svg>
-                </Button>
-                <div className='spacer-h10'></div>
+    const renderCharCard = () => {
+        if (teamStats && team && teamInfo && player) {
+            return (
                 <div>
-                    {/* {teamStats.map(c =>
+                    {teamStats.map(c =>
                         <CharacterCard 
                             key={c.char_id}
                             id={c.char_id}
@@ -40,10 +32,34 @@ function GameUI( {handleEnterChapter, team, teamInfo, teamStats, player, setPlay
                             player={player} 
                             setPlayer={setPlayer}                    
                         />
-                    )} */}
+                    )}
                 </div>
+            )
+        } else {
+            return null
+        }
+    }
+
+    const renderInventoryModal = () => {
+        if (player && playerInfo && playerStats) {
+            return (
+                <InventoryModal show={inventoryModalShow} onHide={() => setInventoryModalShow(false)} player={player} playerInfo={playerInfo} playerStats={playerStats} />
+            )
+        }
+    }
+
+    return (
+        <>
+            <div className="absolute left-top">
+                <Button onClick={() => setMapModalShow(true)} variant="secondary" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-map" viewBox="0 0 16 16">
+                        <path fillRule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.5.5 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103M10 1.91l-4-.8v12.98l4 .8zm1 12.98 4-.8V1.11l-4 .8zm-6-.8V1.11l-4 .8v12.98z"/>
+                    </svg>
+                </Button>
+                <div className='spacer-h10'></div>
+                {renderCharCard()}
             </div>
-            <div className="absolute left-right flex-center">
+            <div className="absolute top-right flex-center">
                 <Button onClick={() => setInventoryModalShow(true)} variant="secondary" >
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-backpack4" viewBox="0 0 16 16">
                         <path d="M4 9.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zm1 .5v3h6v-3h-1v.5a.5.5 0 0 1-1 0V10z"/>
@@ -59,7 +75,7 @@ function GameUI( {handleEnterChapter, team, teamInfo, teamStats, player, setPlay
             </div>
             
             <MapModal show={mapModalShow} onHide={() => setMapModalShow(false)} onEnterChapter={handleEnterChapter}/>
-            <InventoryModal show={inventoryModalShow} onHide={() => setInventoryModalShow(false)} player={player} playerInfo={playerInfo} playerStats={playerStats} />
+            {renderInventoryModal()}
             <QuestModal show={questModalShow} onHide={() => setQuestModalShow(false)}/>
         </>
     )

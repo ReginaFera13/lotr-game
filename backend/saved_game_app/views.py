@@ -12,7 +12,11 @@ from .serializers import SavedGameSerializer, SavedGame
 class All_saved_games(APIView):
     def get(self, request):
         try:
-            all_games = SavedGame.objects.order_by("id")  # Use objects.all() instead of SavedGame.order_by("id")
+            user_id = request.query_params.get('user_id')
+            if user_id:
+                all_games = SavedGame.objects.filter(user_id=user_id).order_by('id')
+            else:
+                all_games = SavedGame.objects.order_by("id")  # Use objects.all() instead of SavedGame.order_by("id")
             serialized_games = SavedGameSerializer(all_games, many=True)
             return Response(serialized_games.data, status=HTTP_200_OK)
         except Exception as e:

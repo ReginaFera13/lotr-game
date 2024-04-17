@@ -13,10 +13,11 @@ from .serializers import DevSubquestSerializer, DevSubquest
 class All_subquests(APIView):
     def get(self, request):
         try:
-            all_subquests = DevSubquestSerializer(DevSubquest.order_by("id"), many=True)
-            return Response(all_subquests.data, status=HTTP_200_OK)
+            all_subquests = DevSubquest.objects.order_by("id")
+            ser_subquests = DevSubquestSerializer(all_subquests, many=True)
+            return Response(ser_subquests.data, status=HTTP_200_OK)
         except Exception as e:
-            return Response(e, status=HTTP_400_BAD_REQUEST)
+            return Response({"error": str(e)}, status=HTTP_400_BAD_REQUEST)
 
     def post(self, request):
         ser_subquests = DevSubquestSerializer(data = request.data)
