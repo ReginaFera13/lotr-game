@@ -1,23 +1,28 @@
+import { useContext } from 'react'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import { GameContext } from '../pages/AGamePage';
 
 
-function CharacterCard({id, armor, att_sp, dam, health, stam, exp, level, curr_char, team, teamInfo, player, setPlayer}) {
+function CharacterCard({id, armor, att_sp, dam, health, stam, exp, level, curr_char}) {
+    const { team, teamInfo, teamStats, player, setPlayer, playerInfo, playerStats } = useContext(GameContext);
 
     const name = () => {
         if (teamInfo) {
             return teamInfo[id].name
+        } else {
+            name()
         }
     }
 
     return (
         <Card style={{ width: '15rem' }}>
             <Card.Body>
-                <Card.Title className='font-size-12'>{name()}</Card.Title>
+                {/* <Card.Title className='font-size-12'>{name()}</Card.Title> */}
                 <Card.Text>
                     <Container>
                         <Row>

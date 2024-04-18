@@ -5,11 +5,12 @@ import MapModal from '../components/MapModal';
 import InventoryModal from '../components/InventoryModal';
 import QuestModal from '../components/QuestModal';
 import CharacterCard from '../components/CharacterCard';
+import { GameContext } from './AGamePage';
 
-function GameUI( {handleEnterChapter, team, teamInfo, teamStats, player, setPlayer, playerInfo, playerStats} ) {
-    const [mapModalShow, setMapModalShow] = useState(false)
+function GameUI( {handleEnterChapter} ) {
     const [inventoryModalShow, setInventoryModalShow] = useState(false)
     const [questModalShow, setQuestModalShow] = useState(false)
+    const { team, teamInfo, teamStats, player, setPlayer, playerInfo, playerStats, mapModalShow, setMapModalShow } = useContext(GameContext);
 
     const renderCharCard = () => {
         if (teamStats && team && teamInfo && player) {
@@ -26,11 +27,7 @@ function GameUI( {handleEnterChapter, team, teamInfo, teamStats, player, setPlay
                             stam={c.stamina}
                             exp={c.exp}
                             level={c.level}
-                            curr_char={c.curr_char}
-                            team={team}
-                            teamInfo={teamInfo}
-                            player={player} 
-                            setPlayer={setPlayer}                    
+                            curr_char={c.curr_char}                  
                         />
                     )}
                 </div>
@@ -43,7 +40,7 @@ function GameUI( {handleEnterChapter, team, teamInfo, teamStats, player, setPlay
     const renderInventoryModal = () => {
         if (player && playerInfo && playerStats) {
             return (
-                <InventoryModal show={inventoryModalShow} onHide={() => setInventoryModalShow(false)} player={player} playerInfo={playerInfo} playerStats={playerStats} />
+                <InventoryModal show={inventoryModalShow} onHide={() => setInventoryModalShow(false)} />
             )
         }
     }

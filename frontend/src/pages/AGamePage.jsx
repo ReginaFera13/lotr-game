@@ -1,4 +1,4 @@
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, createContext, useContext } from 'react'
 import axios from "axios"
 import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/cannon'
@@ -17,7 +17,10 @@ import Gandalf from '../scene-components/Gandalf'
 import GameUI from './GameUI'
 import { saveAGame } from '../utilities'
 
+export const GameContext = createContext();
+
 function AGamePage() {
+    const [mapModalShow, setMapModalShow] = useState(false)
     const [chapter, setChapter] = useState(1)
     const [player, setPlayer] = useState()
     const [playerInfo, setPlayerInfo] = useState([])
@@ -29,6 +32,7 @@ function AGamePage() {
 
     const handleEnterChapter = (chapterId) => {
         setChapter(chapterId);
+        setMapModalShow(false)
     };
 
     const saveGameState = () => {
@@ -162,16 +166,16 @@ function AGamePage() {
     }, [player]);
     
     // console.log('team', team)
-    // console.log('teamInfo', teamInfo)
+    console.log('teamInfo', teamInfo)
     // console.log('teamStats', teamStats)
-    console.log('player', player)
+    // console.log('player', player)
     console.log('playerInfo', playerInfo)
-    console.log('playerStats', playerStats)
+    // console.log('playerStats', playerStats)
 
     const renderUI = () => {
         if (team && teamStats && teamInfo && player && playerStats && playerInfo) {
             return (
-                <GameUI handleEnterChapter={handleEnterChapter} team={team} teamInfo={teamInfo} teamStats={teamStats} player={player} setPalyer={setPlayer} playerInfo={playerInfo} playerStats={playerStats} />
+                <GameUI handleEnterChapter={handleEnterChapter} />
             )
         } else {
             return null
@@ -180,29 +184,31 @@ function AGamePage() {
 
     if (chapter == 1) {
         return (
-            <div id="canvas-container" style={{ position: 'relative', width: '100%', height: '100vh' }}>
-                <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }}>
-                    <OrbitControls/>
-                    <Sky sunPosition={[100, 100, 20]}/>
-                    <ambientLight intensity={0.6}/>
-                    <Physics>
-                        <Suspense fallback={null}>
-                            <ShireGround/>
-                            <ShireDoors/>
-                            <OakTree/>
-                            <PicnicTable/>
-                            <WoodFence/>
-                            <WoodArch/>
-                            <WoodRaft/>
-                            <FlowerBush/>
-                            <SunsetFlowerBush/>
-                            <Hobbits/>
-                            <Gandalf/>
-                        </Suspense>
-                    </Physics>
-                </Canvas>
-                {renderUI()}
-            </div>
+            <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow }}>
+                <div id="canvas-container" style={{ position: 'relative', width: '100%', height: '100vh' }}>
+                    <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }}>
+                        <OrbitControls/>
+                        <Sky sunPosition={[100, 100, 20]}/>
+                        <ambientLight intensity={0.6}/>
+                        <Physics>
+                            <Suspense fallback={null}>
+                                <ShireGround/>
+                                <ShireDoors/>
+                                <OakTree/>
+                                <PicnicTable/>
+                                <WoodFence/>
+                                <WoodArch/>
+                                <WoodRaft/>
+                                <FlowerBush/>
+                                <SunsetFlowerBush/>
+                                <Hobbits/>
+                                <Gandalf/>
+                            </Suspense>
+                        </Physics>
+                    </Canvas>
+                    {renderUI()}
+                </div>
+            </GameContext.Provider>
         )
     }
 
