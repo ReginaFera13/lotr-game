@@ -182,9 +182,26 @@ function AGamePage() {
         } 
     }
 
+    const renderTeamName = (id) => {
+        if (teamInfo && teamInfo.length > 0) {
+            return teamInfo[id].name
+        } else {
+            return null
+        }
+    }
+
+    const renderPlayerName = (id) => {
+        if (playerInfo && playerInfo.length > 0) {
+            return playerInfo[0].name
+        } else {
+            return null
+        }
+    }
+    
+
     if (chapter == 1) {
         return (
-            <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow }}>
+            <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow, renderTeamName, renderPlayerName }}>
                 <div id="canvas-container" style={{ position: 'relative', width: '100%', height: '100vh' }}>
                     <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }}>
                         <OrbitControls/>

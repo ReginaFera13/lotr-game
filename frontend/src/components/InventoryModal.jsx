@@ -21,7 +21,7 @@ function InventoryModal(props) {
     const [footware, setFootware] = useState()
     const [consumable, setConsumable] = useState()
     const [currency, setCurrency] = useState()
-    const { team, teamInfo, teamStats, player, setPlayer, playerInfo, playerStats } = useContext(GameContext);
+    const { team, teamInfo, teamStats, player, setPlayer, playerInfo, playerStats, renderPlayerName } = useContext(GameContext);
     // console.log('playerStats', playerStats)
     // console.log('playerInfo', playerInfo)
 
@@ -47,11 +47,11 @@ function InventoryModal(props) {
 
     // console.log('allInventory', allInventory)
 
-    const name = () => {
-        if (playerInfo) {
-            return playerInfo[0].name
-        }
-    }
+    // const name = () => {
+    //     if (playerInfo) {
+    //         return playerInfo[0].name
+    //     }
+    // }
 
     const sortInventory = (allInventory) => {
         for (let i = 0; i < allInventory.length; i++) {
@@ -382,7 +382,7 @@ function InventoryModal(props) {
                 <div className='absolute left-top font-size-10 width-40vw'>
                     <Container className='flex-center'>
                         <Row>
-                            {/* <Col className='font-size-16'>{name()}</Col> */}
+                            <Col className='font-size-16'>{renderPlayerName()}</Col>
                         </Row>
                         <Row>
                             <Col>{renderWeapon()}</Col>
