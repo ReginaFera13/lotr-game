@@ -49,7 +49,7 @@ function MapModal(props) {
             </Modal.Header>
             <Modal.Body>
                 <div className='flex-center relative'>
-                    <p>Overlay msut be toggled off to use the map.</p>
+                    <p>Overlay must be toggled off to use the map.</p>
                     <Button variant="outline-success" onClick={toggleOverlay}>Toogle Overlay</Button>
                 </div>
                 <div className='flex-center relative'>

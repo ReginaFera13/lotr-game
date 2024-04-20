@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from "axios";
 import Button from 'react-bootstrap/Button';
 import MapModal from '../components/MapModal';
@@ -10,7 +11,8 @@ import { GameContext } from './AGamePage';
 function GameUI( {handleEnterChapter} ) {
     const [inventoryModalShow, setInventoryModalShow] = useState(false)
     const [questModalShow, setQuestModalShow] = useState(false)
-    const { team, teamInfo, teamStats, player, setPlayer, playerInfo, playerStats, mapModalShow, setMapModalShow } = useContext(GameContext);
+    const { team, teamInfo, teamStats, player, setPlayer, playerInfo, playerStats, mapModalShow, setMapModalShow, chapterTitle, saveGameState, gameID } = useContext(GameContext);
+    const navigate = useNavigate()
 
     const renderCharCard = () => {
         if (teamStats && team && teamInfo && player) {
@@ -45,18 +47,39 @@ function GameUI( {handleEnterChapter} ) {
         }
     }
 
+    const gameMenuReturn = () => {
+        navigate('/game')
+    }
+
     return (
         <>
-            <div className="absolute left-top">
-                <Button onClick={() => setMapModalShow(true)} variant="secondary" >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-map" viewBox="0 0 16 16">
-                        <path fillRule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.5.5 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103M10 1.91l-4-.8v12.98l4 .8zm1 12.98 4-.8V1.11l-4 .8zm-6-.8V1.11l-4 .8v12.98z"/>
+            <div className="absolute text-black top-center ">
+                <h1 className='center-text'>{`${chapterTitle}`}</h1>
+            </div>
+            <div className="absolute left-top flex-left">
+                <Button onClick={() => gameMenuReturn()} variant="secondary" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-box-arrow-left" viewBox="0 0 16 16">
+                        <path fillRule="evenodd" d="M6 12.5a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v2a.5.5 0 0 1-1 0v-2A1.5 1.5 0 0 1 6.5 2h8A1.5 1.5 0 0 1 16 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 5 12.5v-2a.5.5 0 0 1 1 0z"/>
+                        <path fillRule="evenodd" d="M.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L1.707 7.5H10.5a.5.5 0 0 1 0 1H1.707l2.147 2.146a.5.5 0 0 1-.708.708z"/>
+                    </svg>
+                </Button>
+                <div className='spacer-h10'></div>
+                <Button onClick={() => saveGameState(gameID)} variant="secondary" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-floppy" viewBox="0 0 16 16">
+                        <path d="M11 2H9v3h2z"/>
+                        <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z"/>
                     </svg>
                 </Button>
                 <div className='spacer-h10'></div>
                 {renderCharCard()}
             </div>
             <div className="absolute top-right flex-center">
+                <Button onClick={() => setMapModalShow(true)} variant="secondary" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-map" viewBox="0 0 16 16">
+                        <path fillRule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.5.5 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103M10 1.91l-4-.8v12.98l4 .8zm1 12.98 4-.8V1.11l-4 .8zm-6-.8V1.11l-4 .8v12.98z"/>
+                    </svg>
+                </Button>
+                <div className='spacer-h10'></div>
                 <Button onClick={() => setInventoryModalShow(true)} variant="secondary" >
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-backpack4" viewBox="0 0 16 16">
                         <path d="M4 9.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5zm1 .5v3h6v-3h-1v.5a.5.5 0 0 1-1 0V10z"/>

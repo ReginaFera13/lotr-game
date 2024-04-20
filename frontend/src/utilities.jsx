@@ -69,12 +69,33 @@ export const createAGame = async(diff, userId)=> {
   return null
 }
 
-export const saveAGame = async(scene_state)=> {
-  let response = await api.put('saved_games/1/', {
+export const saveAGame = async(scene_state, gameID)=> {
+  let response = await api.put(`saved_games/${gameID}/`, {
     'scene_state':scene_state,
   })
   if (response.status === 200){
+    console.log(response)
     return response.data
   }
   return null
 }
+
+export const deleteGameFile = async (id) => {
+  try {
+    const response = await api.delete(`saved_games/${id}`);
+    return null
+  } catch (error) {
+    console.error("Error deleting user account:", error);
+    throw error;
+  }
+};
+
+export const fetchSavedGameStateFromStorage = async (gameID) => {
+  try {
+    const response = await api.get(`saved_games/${gameID}`);
+    return response
+  } catch (error) {
+    console.error("Error fetching saved game:", error);
+    throw error;
+  }
+};

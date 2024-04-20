@@ -2,7 +2,7 @@ import { Suspense, useState, useEffect, createContext, useContext } from 'react'
 import axios from "axios"
 import { Canvas } from '@react-three/fiber'
 import { Physics } from '@react-three/cannon'
-import { Sky, OrbitControls } from '@react-three/drei'
+import { Sky, OrbitControls, Plane } from '@react-three/drei'
 import { ShireGround } from '../scene-components/ShireGround'
 import { ShireDoors } from '../scene-components/ShireDoors'
 import OakTree from '../scene-components/OakTree'
@@ -15,13 +15,14 @@ import SunsetFlowerBush from '../scene-components/SunsetFlowerBush'
 import Hobbits from '../scene-components/Hobbits'
 import Gandalf from '../scene-components/Gandalf'
 import GameUI from './GameUI'
-import { saveAGame } from '../utilities'
+import { saveAGame, fetchSavedGameStateFromStorage } from '../utilities'
 
 export const GameContext = createContext();
 
 function AGamePage() {
     const [mapModalShow, setMapModalShow] = useState(false)
-    const [chapter, setChapter] = useState(1)
+    const [chapter, setChapter] = useState()
+    const [chapterTitle, setChapterTitle] = useState('')
     const [player, setPlayer] = useState()
     const [playerInfo, setPlayerInfo] = useState([])
     const [playerStats, setPlayerStats] = useState()
@@ -30,29 +31,82 @@ function AGamePage() {
     const [teamStats, setTeamStats] = useState([])
     const [npcs, setNpcs] = useState([])
 
+    const currentURL = window.location.href;
+    const parts = currentURL.split('/');
+    const gameID = parts[parts.length - 1];
+
+    // console.log('Game ID:', gameID);
+
     const handleEnterChapter = (chapterId) => {
-        setChapter(chapterId);
+        setChapter(parseInt(chapterId));
         setMapModalShow(false)
     };
 
-    const saveGameState = () => {
+    const saveGameState = (gameID) => {
         const gameState = {
             chapter: chapter,
             player: player,
-            playerInfo: playerInfo,
-            playerStats: playerStats,
-            team: team,
-            teamInfo: teamInfo,
-            teamStats: teamStats,
-            npcs: npcs,
+            team: team
         };
         const scene_state = JSON.stringify(gameState);
-        saveAGame(scene_state) 
+        saveAGame(scene_state, gameID) 
+    };
+
+    const fetchSavedGameState = async (gameID) => {
+        try {
+            // Retrieve the saved game state (you need to implement this)
+            const savedGameState = await fetchSavedGameStateFromStorage(gameID); // Implement this function
+            // console.log('savedGameState', savedGameState)
+            
+            // If saved game state is available
+            if (savedGameState) {
+                // Extract chapter, player, and team information
+                const gameStateString = savedGameState.data.scene_state;
+                // console.log('gameState string:', gameStateString);
+                if (gameStateString) {
+                    // Parse the JSON string into a JavaScript object
+                    const gameState = JSON.parse(gameStateString);
+                    // console.log('gameState object:', gameState);
+
+                    const savedChapter = gameState.chapter
+                    const savedPlayer = gameState.player
+                    const savedTeam = gameState.team
+
+                    if (savedChapter) {
+                        setChapter(savedChapter)
+                    } else {
+                        setChapter(1)
+                    }
+
+                    if (savedPlayer) {
+                        setPlayer(savedPlayer)
+                    } else {
+                        fetchPlayer(4)
+                    }
+
+                    if (savedTeam) {
+                        setTeam(savedTeam)
+                    } else {
+                        fetchTeam([4])
+                    }
+                } else {
+                    setChapter(1)
+                    fetchPlayer(4)
+                    fetchTeam([4])
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching saved game state:", error);
+        }
     };
 
     useEffect(() => {
-        saveGameState();
-    }, [chapter, player, team, teamInfo, teamStats, npcs]);
+        fetchSavedGameState(gameID);
+    }, []);
+
+    // useEffect(() => {
+    //     saveGameState(gameID);
+    // }, [chapter, player, team]);
 
     const fetchTeam = async (charIds) => {
         try {
@@ -74,16 +128,21 @@ function AGamePage() {
         } catch (error) {
             console.error("Error fetching characters:", error);
         }
-    };
+    }; //, 22-sam, 11-merry, 44-pippin
 
-    useEffect(() => {
-        if (chapter === 1) {
-            fetchTeam([4]);
-            fetchPlayer(4);
+    const fetchChapter = async (chapter) => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/v1/dev_areas/${chapter}/`);
+            const title = response.data.name;
+            setChapterTitle(title);
+        } catch (error) {
+            console.error("Error fetching chapter title:", error);
         }
-    }, [chapter]);
+    }
 
-    //, 22-sam, 11-merry, 44-pippin
+    // console.log('chapterTitle', chapterTitle)
+
+    
 
     const getTeamInfo = async (team) => {
         if (team) {
@@ -102,7 +161,7 @@ function AGamePage() {
     }
 
     const getPlayerInfo = async (player) => {
-        console.log('player', player)
+        // console.log('player', player)
         if (player) {
             const theOneId = player[0].char_id
             const response = await axios.get(`http://127.0.0.1:8000/api/v1/the_one_api/${theOneId}/`)
@@ -134,7 +193,7 @@ function AGamePage() {
             const data = { curr_char: true }; // or false, depending on your logic
             // Make the PUT request with the correct data object
             const response = await axios.put(`http://127.0.0.1:8000/api/v1/game_characters/${playerId}/`, data);
-            console.log(response);
+            // console.log(response);
         } catch (error) {
             console.error("Error setting player to active:", error);
         }
@@ -165,11 +224,12 @@ function AGamePage() {
         }
     }, [player]);
     
-    // console.log('team', team)
-    console.log('teamInfo', teamInfo)
+    console.log('chapter', chapter)
+    console.log('team', team)
+    // console.log('teamInfo', teamInfo)
     // console.log('teamStats', teamStats)
-    // console.log('player', player)
-    console.log('playerInfo', playerInfo)
+    console.log('player', player)
+    // console.log('playerInfo', playerInfo)
     // console.log('playerStats', playerStats)
 
     const renderUI = () => {
@@ -201,7 +261,7 @@ function AGamePage() {
 
     if (chapter == 1) {
         return (
-            <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow, renderTeamName, renderPlayerName }}>
+            <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow, renderTeamName, renderPlayerName, chapterTitle, saveGameState, gameID }}>
                 <div id="canvas-container" style={{ position: 'relative', width: '100%', height: '100vh' }}>
                     <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }}>
                         <OrbitControls/>
@@ -220,6 +280,30 @@ function AGamePage() {
                                 <SunsetFlowerBush/>
                                 <Hobbits/>
                                 <Gandalf/>
+                            </Suspense>
+                        </Physics>
+                    </Canvas>
+                    {renderUI()}
+                </div>
+            </GameContext.Provider>
+        )
+    } 
+    
+    if (chapter != 1) {
+        return (
+            <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow, renderTeamName, renderPlayerName }}>
+                <div id="canvas-container" style={{ position: 'relative', width: '100%', height: '100vh' }}>
+                    <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }}>
+                        <OrbitControls/>
+                        <Sky sunPosition={[100, 100, 20]}/>
+                        <ambientLight intensity={0.6}/>
+                        <Physics>
+                            <Suspense fallback={null}>
+                                <Plane
+                                    rotation={[-Math.PI / 2, 0, 0]}
+                                    position={[0,0,0]}
+                                    args={[50, 50, 1024, 1024]}
+                                />
                             </Suspense>
                         </Physics>
                     </Canvas>
