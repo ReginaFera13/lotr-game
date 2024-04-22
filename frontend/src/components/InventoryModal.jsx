@@ -54,10 +54,11 @@ function InventoryModal(props) {
     // }
 
     const sortInventory = (allInventory) => {
+        const inventoryData = []
         for (let i = 0; i < allInventory.length; i++) {
             const item = allInventory[i]
             // console.log('item', item)
-            const item_catagory = item.item_id.category
+            const item_catagory = item.item.category
             // console.log('item_catagory', item_catagory)
             const equipt = item.equipt
             // console.log('equipt', equipt)
@@ -78,8 +79,9 @@ function InventoryModal(props) {
             } else if (item_catagory == 'Currency') {
                 setCurrency(item)
             } else {
-                setInventory([...inventory, item])
+                inventoryData.push(item)
             }
+            setInventory(inventoryData)
         }
     }
 
@@ -99,13 +101,39 @@ function InventoryModal(props) {
     // console.log('currency', currency)
     // console.log('inventory', inventory)
 
+    const unequipItem = async (id, category) => {
+        try {
+            if (category == 'Weapon') {
+                setWeapon()
+            } else if (category == 'Helmet') {
+                setHelmet()
+            } else if (category == 'Chest') {
+                setChest()
+            } else if (category == 'Cloak') {
+                setCloak()
+            } else if (category == 'Legs') {
+                setLegs()
+            } else if (category == 'Footware') {
+                setFootware()
+            } else if (category == 'Consumable') {
+                setConsumable()
+            }
+            const data = { equipt: false }; 
+            const response = await axios.put(`http://127.0.0.1:8000/api/v1/game_inventory/${id}/`, data);
+            await getAllInventory(playerStats)
+        } catch (error) {
+            console.error("Error setting player to active:", error);
+        }
+    }
+
     const renderWeapon = () => {
         if (weapon) {
             return (
                 <Card style={{ width: '5rem' }}>
                     <Card.Img variant="top" src="/src/images/Weapon.png" />
                     <Card.Body>
-                        <Card.Text>{`${weapon.item_id.name} Level ${weapon.item_id.stat}`}</Card.Text>
+                        <Card.Text>{`${weapon.item.name} Level ${weapon.item.stat}`}</Card.Text>
+                        <Button onClick={() => unequipItem(weapon.id, weapon.item.category)} variant="outline-success" size="sm">Unequip</Button>
                     </Card.Body>
                 </Card>
             )
@@ -127,7 +155,8 @@ function InventoryModal(props) {
                 <Card style={{ width: '5rem' }}>
                     <Card.Img variant="top" src="/src/images/Helmet.png" />
                     <Card.Body>
-                        <Card.Text>{`${helmet.item_id.name} Level ${helmet.item_id.stat}`}</Card.Text>
+                        <Card.Text>{`${helmet.item.name} Level ${helmet.item.stat}`}</Card.Text>
+                        <Button onClick={() => unequipItem(helmet.id, helmet.item.category)} variant="outline-success" size="sm">Unequip</Button>
                     </Card.Body>
                 </Card>
             )
@@ -149,7 +178,8 @@ function InventoryModal(props) {
                 <Card style={{ width: '5rem' }}>
                     <Card.Img variant="top" src="/src/images/Chest.png" />
                     <Card.Body>
-                        <Card.Text>{`${chest.item_id.name} Level ${chest.item_id.stat}`}</Card.Text>
+                        <Card.Text>{`${chest.item.name} Level ${chest.item.stat}`}</Card.Text>
+                        <Button onClick={() => unequipItem(chest.id, chest.item.category)} variant="outline-success" size="sm">Unequip</Button>
                     </Card.Body>
                 </Card>
             )
@@ -171,7 +201,8 @@ function InventoryModal(props) {
                 <Card style={{ width: '5rem' }}>
                     <Card.Img variant="top" src="/src/images/Cloak.png" />
                     <Card.Body>
-                        <Card.Text>{`${cloak.item_id.name} Level ${cloak.item_id.stat}`}</Card.Text>
+                        <Card.Text>{`${cloak.item.name} Level ${cloak.item.stat}`}</Card.Text>
+                        <Button onClick={() => unequipItem(cloak.id, cloak.item.category)} variant="outline-success" size="sm">Unequip</Button>
                     </Card.Body>
                 </Card>
             )
@@ -193,7 +224,8 @@ function InventoryModal(props) {
                 <Card style={{ width: '5rem' }}>
                     <Card.Img variant="top" src="/src/images/Legs.png" />
                     <Card.Body>
-                        <Card.Text>{`${legs.item_id.name} Level ${legs.item_id.stat}`}</Card.Text>
+                        <Card.Text>{`${legs.item.name} Level ${legs.item.stat}`}</Card.Text>
+                        <Button onClick={() => unequipItem(legs.id, legs.item.category)} variant="outline-success" size="sm">Unequip</Button>
                     </Card.Body>
                 </Card>
             )
@@ -215,7 +247,8 @@ function InventoryModal(props) {
                 <Card style={{ width: '5rem' }}>
                     <Card.Img variant="top" src="/src/images/Footware.png" />
                     <Card.Body>
-                        <Card.Text>{`${footware.item_id.name} Level ${footware.item_id.stat}`}</Card.Text>
+                        <Card.Text>{`${footware.item.name} Level ${footware.item.stat}`}</Card.Text>
+                        <Button onClick={() => unequipItem(footware.id, footware.item.category)} variant="outline-success" size="sm">Unequip</Button>
                     </Card.Body>
                 </Card>
             )
@@ -237,7 +270,8 @@ function InventoryModal(props) {
                 <Card style={{ width: '5rem' }}>
                     <Card.Img variant="top" src="/src/images/Consumable.png" />
                     <Card.Body>
-                        <Card.Text>{`${footware.item_id.name} Level ${footware.item_id.stat}`}</Card.Text>
+                        <Card.Text>{`${footware.item.name} Level ${footware.item.stat}`}</Card.Text>
+                        <Button onClick={() => unequipItem(consumable.id, consumable.item.category)} variant="outline-success" size="sm">Unequip</Button>
                     </Card.Body>
                 </Card>
             )
@@ -351,22 +385,39 @@ function InventoryModal(props) {
         }
     }
 
+    const equipItem = async (id) => {
+        try {
+            const data = { equipt: true }; 
+            const response = await axios.put(`http://127.0.0.1:8000/api/v1/game_inventory/${id}/`, data);
+            getAllInventory(playerStats)
+        } catch (error) {
+            console.error("Error setting player to active:", error);
+        }
+    }
+
+    const renderEquiptButton = (category, id) => {
+        if (category == 'Weapon' || category == 'Helmet' || category == 'Chest' || category == 'Cloak' || category == 'Legs' || category == 'Footware' || category == 'Consumable') {
+            return <Button onClick={() => equipItem(id)} variant="outline-success" size="sm">Equip</Button>
+        }
+    }
+
     const renderInventory = () => {
+        console.log(inventory)
         if (inventory.length > 0) {
-            for (let i = 0; i < inventory.length; i++) {
-                const item = inventory[i]
-                const item_catagory = item.item_id.category
+            return inventory.map((item, index) => {
+                const item_category = item.item.category;
                 return (
-                    <Card style={{ width: '5rem' }}>
+                    <Card key={index} style={{ width: '5rem' }}>
                         <Card.Img variant="top" src={`/src/images/${item_category}.png`} />
                         <Card.Body>
-                            <Card.Text>{`${item.item_id.name} Level ${item.item_id.stat}`}</Card.Text>
+                            <Card.Text>{`${item.item.name} Level ${item.item.stat}`}</Card.Text>
+                            {renderEquiptButton(item_category, item.id)} 
                         </Card.Body>
                     </Card>
-                )
-            }
+                );
+            });
         } else {
-            return <h4>No Inventory Items</h4>
+            return <h4>No Inventory Items</h4>;
         }
     }
 

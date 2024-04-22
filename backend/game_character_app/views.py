@@ -29,12 +29,13 @@ class All_game_characters(APIView):
             return Response(ser_characters.errors, status=HTTP_400_BAD_REQUEST)
 
 class A_game_character(APIView):
-    def get(self, request, id):
-        char = get_object_or_404(GameCharacter, char_id = id)
+    def get(self, request, game_id, id):
+        char = get_object_or_404(GameCharacter, game_id=game_id, char_id=id)
         return Response(GameCharacterSerializer(char).data)
     
-    def put(self, request, id):
-        char = get_object_or_404(GameCharacter, char_id=id)
+    def put(self, request, game_id, id):
+        char = get_object_or_404(GameCharacter, game_id=game_id, char_id=id)
+        print(char)
         if 'health' in request.data:
             char.change_health(request.data['health'])
         if 'stamina' in request.data:
@@ -59,7 +60,7 @@ class A_game_character(APIView):
             return Response(status=HTTP_200_OK)
         return Response(ser_char.errors, status=HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, id):
-        char = get_object_or_404(GameCharacter, char_id = id)
+    def delete(self, request, game_id, id):
+        char = get_object_or_404(GameCharacter, game_id=game_id, char_id = id)
         char.delete()
         return Response(status=HTTP_204_NO_CONTENT)

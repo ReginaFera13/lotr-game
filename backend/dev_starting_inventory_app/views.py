@@ -13,8 +13,9 @@ from .serializers import DevStartingInventorySerializer, DevStartingInventory
 class All_characters_starting_inventory(APIView):
     def get(self, request):
         try:
-            all_inventory = DevStartingInventorySerializer(DevStartingInventory.order_by("id"), many=True)
-            return Response(all_inventory.data, status=HTTP_200_OK)
+            all_inventory = DevStartingInventory.objects.order_by("id")
+            ser_inventory = DevStartingInventorySerializer(all_inventory, many=True)
+            return Response(ser_inventory.data, status=HTTP_200_OK)
         except Exception as e:
             return Response(e, status=HTTP_400_BAD_REQUEST)
 

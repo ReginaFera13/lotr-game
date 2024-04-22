@@ -9,10 +9,9 @@ class GameStats(models.Model):
     diff_level = models.CharField(validators = [v.MinLengthValidator(4), v.MaxLengthValidator(6), validate_diff_level])
     total_enemies_killed = models.BigIntegerField(default=0)
     total_resources_collected = models.BigIntegerField(default=0)
-    total_hours_played = models.DurationField(default=0)
     total_times_killed = models.BigIntegerField(default=0)
     games_completed = models.BigIntegerField(default=0)
-    
+        
     def __str__(self):
         return f'User: {self.user_id}; Difficulty: {self.diff_level}; Enemies: {self.total_enemies_killed}; Resources: {self.total_resources_collected}; Hours: {self.total_hours_played}; Deaths: {self.total_times_killed}; Games: {self.games_completed}'
     
@@ -20,12 +19,8 @@ class GameStats(models.Model):
         self.total_enemies_killed += 1
         self.save()
     
-    def change_resources_collected(self, new_resources_collected):
+    def change_resources_collected(self):
         self.total_resources_collected += 1
-        self.save()
-    
-    def change_hours_played(self, new_hours_played):
-        self.total_hours_played += new_hours_played
         self.save()
     
     def change_times_killed(self):

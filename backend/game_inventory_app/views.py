@@ -25,13 +25,14 @@ class All_game_character_inventories(APIView):
             return Response(e, status=HTTP_400_BAD_REQUEST)
 
     def post(self, request):
-        ser_chars = GameInventorySerializer(data = request.data)
-        if ser_chars.is_valid():
-            ser_chars.save()
-            return Response(ser_chars.data, status=HTTP_201_CREATED)
+        print('request.data', request.data) # ChatGPT: This is not printing
+        ser_inv = GameInventorySerializer(data = request.data)
+        if ser_inv.is_valid():
+            ser_inv.save()
+            return Response(ser_inv.data, status=HTTP_201_CREATED)
         else:
-            print(ser_chars.errors)
-            return Response(ser_chars.errors, status=HTTP_400_BAD_REQUEST)
+            print(ser_inv.errors)
+            return Response(ser_inv.errors, status=HTTP_400_BAD_REQUEST)
 
 class A_game_character_inventory(APIView):
     def get(self, request, id):

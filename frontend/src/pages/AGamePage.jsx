@@ -42,67 +42,129 @@ function AGamePage() {
         setMapModalShow(false)
     };
 
-    const saveGameState = (gameID) => {
-        const gameState = {
-            chapter: chapter,
-            player: player,
-            team: team
-        };
-        const scene_state = JSON.stringify(gameState);
-        saveAGame(scene_state, gameID) 
+    const saveGameState = async (initialGameState) => {
+        try {
+            const gameState = {
+                chapter: initialGameState[0],
+                player: initialGameState[1],
+                team: initialGameState[2] 
+            };
+            console.log('gameState', gameState)
+            const scene_state = JSON.stringify(gameState);
+            await saveAGame(scene_state, gameID);
+        } catch (error) {
+            console.error("Error saving game state:", error);
+        }
     };
 
-    const fetchSavedGameState = async (gameID) => {
+    const fetchGameData = async () => {
         try {
-            // Retrieve the saved game state (you need to implement this)
-            const savedGameState = await fetchSavedGameStateFromStorage(gameID); // Implement this function
-            // console.log('savedGameState', savedGameState)
-            
-            // If saved game state is available
-            if (savedGameState) {
-                // Extract chapter, player, and team information
-                const gameStateString = savedGameState.data.scene_state;
-                // console.log('gameState string:', gameStateString);
-                if (gameStateString) {
-                    // Parse the JSON string into a JavaScript object
-                    const gameState = JSON.parse(gameStateString);
-                    // console.log('gameState object:', gameState);
-
-                    const savedChapter = gameState.chapter
-                    const savedPlayer = gameState.player
-                    const savedTeam = gameState.team
-
-                    if (savedChapter) {
-                        setChapter(savedChapter)
-                    } else {
-                        setChapter(1)
-                    }
-
-                    if (savedPlayer) {
-                        setPlayer(savedPlayer)
-                    } else {
-                        fetchPlayer(4)
-                    }
-
-                    if (savedTeam) {
-                        setTeam(savedTeam)
-                    } else {
-                        fetchTeam([4])
-                    }
-                } else {
-                    setChapter(1)
-                    fetchPlayer(4)
-                    fetchTeam([4])
-                }
-            }
+            await addCharsToDB()
+            await addInventoryToDB()
+            const initialChapter = 1
+            setChapter(initialChapter)
+            const initialPlayer = await fetchPlayer(4)
+            const initialTeam = await fetchTeam([4])
+            const initialGameState = [initialChapter, initialPlayer, initialTeam]
+            console.log('initialGameState', initialGameState)
+            return initialGameState
         } catch (error) {
-            console.error("Error fetching saved game state:", error);
+            console.error("Error fetching game data:", error);
         }
     };
 
     useEffect(() => {
-        fetchSavedGameState(gameID);
+        const initializeGame = async () => {
+            try {
+                const savedGameState = await fetchSavedGameStateFromStorage(gameID);
+                if (!savedGameState || !savedGameState.data.scene_state) {
+                    console.log("Initializing new game...");
+                    const initialGameState = await fetchGameData();
+                    console.log('initialGameState2', initialGameState)
+                    console.log("New game data fetched. Saving game state...");
+                    await saveGameState(initialGameState);
+                    console.log("Game state saved.");
+                } else {
+                    const gameState = JSON.parse(savedGameState.data.scene_state);
+                    setChapter(gameState.chapter);
+                    setPlayer(gameState.player);
+                    setTeam(gameState.team);
+                    console.log("Loaded saved game state:", gameState);
+                }
+            } catch (error) {
+                console.error("Error initializing the game:", error);
+            }
+        };
+    
+        initializeGame();
     }, []);
+
+    const addCharsToDB = async () => {
+        try {
+            // Fetch all characters from the dev_characters endpoint
+            const response = await axios.get('http://127.0.0.1:8000/api/v1/dev_characters/');
+            const devCharacters = response.data;
+    
+            // Iterate over each character
+            for (const devCharacter of devCharacters) {
+                // Map the fields from DevCharacter to GameCharacter
+                const gameCharacter = {
+                    game_id: gameID,
+                    char_id: devCharacter.id, // Assuming devCharacter.id is the primary key
+                    health: devCharacter.start_health,
+                    stamina: devCharacter.start_stam,
+                    damage: devCharacter.start_dam,
+                    armor: devCharacter.start_armor,
+                    att_sp: devCharacter.start_att_sp,
+                    // You may need to set other fields based on your application logic
+                };
+    
+                // Send a POST request to add the character to the game_characters endpoint
+                const gameCharResponse = await axios.post('http://127.0.0.1:8000/api/v1/game_characters/', gameCharacter);
+                console.log('Character added to the game:', gameCharResponse.data);
+            }
+        } catch (error) {
+            console.error('Error adding characters to the game:', error);
+        }
+    }
+
+    const addInventoryToDB = async () => {
+        try {
+            const response = await axios.get('http://127.0.0.1:8000/api/v1/dev_starting_inventory/');
+            const devStartInv = response.data;
+            console.log(devStartInv)
+    
+            for (const item of devStartInv) {
+                const character = await getCharacter(item.char_id)
+                const charID = character.id
+                const itemID = item.item_id
+                console.log('itemID', itemID)
+                const gameInv = {
+                    char_id: charID, 
+                    item_id: itemID,
+                    quantity: item.quantity
+                };
+
+                console.log('gameInv', gameInv) //ChatGPT: this returns the correct data to be passed into the post request below
+    
+                const gameInvResponse = await axios.post('http://127.0.0.1:8000/api/v1/game_inventory/', gameInv);
+                console.log('Item added to the game:', gameInvResponse.data);
+            }
+        } catch (error) {
+            console.error('Error adding items to the game:', error);
+        }
+    }
+
+    const getCharacter = async (id) => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_characters/${gameID}/${id}`);
+            const stats = response.data;
+            return stats
+        } catch (error) {
+            console.error("Error fetching team stats:", error);
+        }
+    }
+    
 
     // useEffect(() => {
     //     saveGameState(gameID);
@@ -115,6 +177,7 @@ function AGamePage() {
                 return response.data;
             }));
             setTeam(characters);
+            return characters
         } catch (error) {
             console.error("Error fetching characters:", error);
         }
@@ -125,6 +188,7 @@ function AGamePage() {
             const response = await axios.get(`http://127.0.0.1:8000/api/v1/dev_characters/${charId}/`);
             const character = response.data;
             setPlayer([character]);
+            return [character]
         } catch (error) {
             console.error("Error fetching characters:", error);
         }
@@ -176,7 +240,7 @@ function AGamePage() {
         try {
             const teamStatsObject = [];        
             for (const character of team) {
-                const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_characters/${character.id}`);
+                const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_characters/${gameID}/${character.id}`);
                 const stats = response.data;
                 teamStatsObject.push(stats);
             }
@@ -192,7 +256,7 @@ function AGamePage() {
             // Define the data object containing the field you want to update
             const data = { curr_char: true }; // or false, depending on your logic
             // Make the PUT request with the correct data object
-            const response = await axios.put(`http://127.0.0.1:8000/api/v1/game_characters/${playerId}/`, data);
+            const response = await axios.put(`http://127.0.0.1:8000/api/v1/game_characters/${gameID}/${playerId}/`, data);
             // console.log(response);
         } catch (error) {
             console.error("Error setting player to active:", error);
@@ -201,7 +265,7 @@ function AGamePage() {
 
     const getPlayerStats = async (player) => {
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_characters/${player[0].id}`);
+            const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_characters/${gameID}/${player[0].id}`);
             const stats = response.data;
             setPlayerStats(stats);
         } catch (error) {
@@ -224,11 +288,11 @@ function AGamePage() {
         }
     }, [player]);
     
-    console.log('chapter', chapter)
-    console.log('team', team)
+    // console.log('chapter', chapter)
+    // console.log('team', team)
     // console.log('teamInfo', teamInfo)
     // console.log('teamStats', teamStats)
-    console.log('player', player)
+    // console.log('player', player)
     // console.log('playerInfo', playerInfo)
     // console.log('playerStats', playerStats)
 

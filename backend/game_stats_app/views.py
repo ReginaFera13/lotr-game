@@ -13,10 +13,15 @@ from .serializers import GameStats, GameStatsSerializer
 class All_game_stats(APIView):
     def get(self, request):
         try:
-            all_stats = GameStatsSerializer(GameStats.order_by("id"), many=True)
-            return Response(all_stats.data, status=HTTP_200_OK)
+            user_id = request.query_params.get('user_id')  # Get the user_id from query parameters
+            if user_id:
+                all_stats = GameStats.objects.filter(user_id=user_id).order_by("id")
+            else:
+                all_stats = GameStats.objects.all().order_by("id")
+            ser_stats = GameStatsSerializer(all_stats, many=True)
+            return Response(ser_stats.data, status=HTTP_200_OK)
         except Exception as e:
-            return Response(e, status=HTTP_400_BAD_REQUEST)
+            return Response(str(e), status=HTTP_400_BAD_REQUEST)
 
     def post(self, request):
         ser_stats = GameStatsSerializer(data = request.data)
@@ -38,8 +43,6 @@ class A_game_stat(APIView):
             stats.change_enemies_killed()
         if 'total_resources_collected' in request.data and request.data['total_resources_collected']:
             stats.change_resources_collected()
-        if 'total_hours_played' in request.data and request.data['total_hours_played']:
-            stats.change_hours_played()
         if 'total_times_killed' in request.data and request.data['total_times_killed']:
             stats.change_times_killed()
         if 'games_completed' in request.data and request.data['games_completed']:
@@ -47,7 +50,7 @@ class A_game_stat(APIView):
         ser_stats = GameStatsSerializer(stats, data = request.data, partial = True)
         if ser_stats.is_valid():
             ser_stats.save()
-            return Response(status=HTTP_204_NO_CONTENT)
+            return Response(status=HTTP_200_OK)
         return Response(ser_stats.errors, status=HTTP_400_BAD_REQUEST)
     
     def delete(self, request, id):

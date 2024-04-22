@@ -24,7 +24,7 @@ function SignupPage() {
               }),
           });
           if (response.ok) {
-              navigate('/login')
+            navigate('/login')
           } 
       } catch (error) {
           console.error('Error during registration:', error);
