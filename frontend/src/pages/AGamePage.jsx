@@ -30,6 +30,13 @@ function AGamePage() {
     const [teamInfo, setTeamInfo] = useState([])
     const [teamStats, setTeamStats] = useState([])
     const [npcs, setNpcs] = useState([])
+    const [quests, setQuests] = useState([])
+    const [subquests, setSubquests] = useState([])
+    const [completedQuests, setCompletedQuests] = useState([])
+    const [completedSubquests, setCompletedSubquests] = useState([])
+    const [incompleteQuests, setIncompleteQuests] = useState([])
+    const [incompleteSubquests, setIncompleteSubquests] = useState([])
+    const [allInventory, setAllInventory] = useState([])
 
     const currentURL = window.location.href;
     const parts = currentURL.split('/');
@@ -61,6 +68,8 @@ function AGamePage() {
         try {
             await addCharsToDB()
             await addInventoryToDB()
+            await addQuestsToDB()
+            await addSubquestsToDB()
             const initialChapter = 1
             setChapter(initialChapter)
             const initialPlayer = await fetchPlayer(4)
@@ -145,7 +154,7 @@ function AGamePage() {
                     quantity: item.quantity
                 };
 
-                console.log('gameInv', gameInv) //ChatGPT: this returns the correct data to be passed into the post request below
+                // console.log('gameInv', gameInv) 
     
                 const gameInvResponse = await axios.post('http://127.0.0.1:8000/api/v1/game_inventory/', gameInv);
                 console.log('Item added to the game:', gameInvResponse.data);
@@ -154,6 +163,54 @@ function AGamePage() {
             console.error('Error adding items to the game:', error);
         }
     }
+
+    const addQuestsToDB = async () => {
+        try {
+            const response = await axios.get('http://127.0.0.1:8000/api/v1/dev_quests/');
+            const devQuest = response.data;
+            console.log(devQuest)
+    
+            for (const quest of devQuest) {
+                const questID = quest.id
+                const questData = {
+                    game_id: gameID,
+                    quest_id: questID, 
+                };
+
+                console.log('questData', questData) 
+    
+                const questDataResponse = await axios.post('http://127.0.0.1:8000/api/v1/game_quests/', questData);
+                console.log('Quest added to the game:', questDataResponse.data);
+            }
+        } catch (error) {
+            console.error('Error adding quests to the game:', error);
+        }
+    }
+
+    const addSubquestsToDB = async () => {
+        try {
+            const response = await axios.get('http://127.0.0.1:8000/api/v1/dev_subquests/');
+            const devSubquest = response.data;
+            // console.log(devSubquest)
+    
+            for (const subquest of devSubquest) {
+                const subquestID = subquest.id
+                const subquestData = {
+                    game_id: gameID,
+                    subquest_id: subquestID, 
+                };
+
+                // console.log('subquestData', subquestData) 
+    
+                const subquestDataResponse = await axios.post('http://127.0.0.1:8000/api/v1/game_subquests/', subquestData);
+                console.log('Quest added to the game:', subquestDataResponse.data);
+            }
+        } catch (error) {
+            console.error('Error adding subquests to the game:', error);
+        }
+    }
+    
+    
 
     const getCharacter = async (id) => {
         try {
@@ -321,11 +378,127 @@ function AGamePage() {
             return null
         }
     }
+
+    const fetchQuests = async () => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_quests/?game_id=${gameID}`);
+            const questData = response.data;
+            // console.log(questData)
+            setQuests(questData)
+        } catch (error) {
+            console.error("Error quests:", error);
+        }
+    }
+
+    const fetchSubquests = async () => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_subquests/?game_id=${gameID}`);
+            const subquestData = response.data;
+            // console.log(subquestData)
+            setSubquests(subquestData)
+        } catch (error) {
+            console.error("Error subquests:", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchQuests()
+        fetchSubquests()
+    }, []);
+    
+    // console.log('quests', quests)
+    // console.log('subquests', subquests)
+
+    const sortQuests = () => {
+        const compQuests = []
+        const incompQuests = []
+        for (const quest of quests) {
+            // console.log('quest', quest)
+            const completed = quest.completed
+            if (completed) {
+                compQuests.push(quest)
+            } else {
+                incompQuests.push(quest)
+            }
+        }
+        setCompletedQuests(compQuests)
+        setIncompleteQuests(incompQuests)
+    }
+
+    const sortSubquests = () => {
+        const compSubquests = []
+        const incompSubquests = []
+        for (const subquest of subquests) {
+            // console.log('subquest', subquest)
+            const completed = subquest.completed
+            if (completed) {
+                compSubquests.push(subquest)
+            } else {
+                incompSubquests.push(subquest)
+            }
+        }
+        setCompletedSubquests(compSubquests)
+        setIncompleteSubquests(incompSubquests)
+    }
+
+    useEffect(() => {
+        sortQuests()
+        sortSubquests()
+    }, [quests, subquests]);
+
+    
+    // console.log('completedQuests', completedQuests)
+    // console.log('incompleteQuests', incompleteQuests)
+    // console.log('completedSubquests', completedSubquests)
+    // console.log('incompleteSubquests', incompleteSubquests)
+
+    const getAllInventory = async (playerStats) => {
+        const id = playerStats.id
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_inventory/?char_id=${id}`);
+            const items = response.data;
+            // console.log(items)
+            setAllInventory(items)
+        } catch (error) {
+            console.error("Error inventory:", error);
+        }
+    }
+
+    useEffect(() => {
+        if (playerStats) {
+            getAllInventory(playerStats)
+        }
+    }, [playerStats]);
+
+    // console.log('allInventory', allInventory)
+
+    const resourceCollected = async () => {
+        try {
+            const gameResponse = await axios.get(`http://127.0.0.1:8000/api/v1/saved_games/${gameID}/`)
+            const gameData = gameResponse.data
+            console.log('gameData', gameData)
+
+            const statsResponse = await axios.get(`http://127.0.0.1:8000/api/v1/game_stats/?user_id=${gameData.user_id}`)
+            const statsData = statsResponse.data
+            console.log('statsData', statsData)
+
+            for (const stat of statsData) {
+                if (stat.diff_level == gameData.diff_level.toLowerCase()) {
+                    console.log('stat', stat)
+                    const data = { total_resources_collected: 1 }; 
+                    const newStatResponse = await axios.put(`http://127.0.0.1:8000/api/v1/game_stats/${stat.id}/`, data);
+                    console.log('Resource collected:', newStatResponse.data)
+                }
+            }            
+        } catch (error) {
+            console.error("Error updating resource collected:", error);
+        }
+    }
     
 
     if (chapter == 1) {
         return (
-            <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow, renderTeamName, renderPlayerName, chapterTitle, saveGameState, gameID }}>
+            <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow, renderTeamName, renderPlayerName, chapterTitle, saveGameState, gameID, incompleteQuests, incompleteSubquests, completedQuests, fetchSubquests, allInventory, setAllInventory, getAllInventory, fetchQuests, resourceCollected }}>
                 <div id="canvas-container" style={{ position: 'relative', width: '100%', height: '100vh' }}>
                     <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }}>
                         <OrbitControls/>

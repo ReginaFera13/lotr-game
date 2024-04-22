@@ -7,14 +7,36 @@ Source: https://sketchfab.com/3d-models/arch-047fb3ffe3a041878a659480aafff4af
 Title: Arch
 */
 
-import React, { useRef } from 'react'
+import { useRef, useContext } from 'react'
 import { useGLTF } from '@react-three/drei'
+import axios from "axios"
+import { GameContext } from '../pages/AGamePage';
 
 export default function WoodArch(props) {
   const groupRef = useRef()
   const { nodes, materials } = useGLTF('/WoodArch.gltf')
+  const { gameID, fetchSubquests } = useContext(GameContext);
+
+  const handleClick = async () => {
+    console.log('Wood arch clicked!')
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_subquests/?game_id=${gameID}`);
+      const questData = response.data;
+      console.log(questData)
+      if (questData[1].completed == false) {
+        const data = { completed: true }
+        const subquestResponse = await axios.put(`http://127.0.0.1:8000/api/v1/game_subquests/${questData[1].id}/`, data)
+        console.log('Quest completed:', subquestResponse.data)
+        fetchSubquests()
+      }
+    } catch (error) {
+      console.error("Error completing quests:", error);
+    }
+  }
+
+
   return (
-    <group ref={groupRef} {...props} dispose={null} scale={.2}  position={[-2.5, 0, -12]} rotation={[0, 0.3, 0]}>
+    <group ref={groupRef} {...props} dispose={null} scale={.2}  position={[-2.5, 0, -12]} rotation={[0, 0.3, 0]} onClick={handleClick}>
       <mesh geometry={nodes.pCylinder1_blinn2_0.geometry} material={materials.blinn2} />
     </group>
   )

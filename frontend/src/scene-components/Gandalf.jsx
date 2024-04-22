@@ -7,15 +7,39 @@ Source: https://sketchfab.com/3d-models/whispering-wizard-animated-b14d316dd0554
 Title: Whispering Wizard (Animated)
 */
 
-import React, { useRef } from 'react'
+import { useRef, useContext } from 'react'
 import { useGLTF, useAnimations } from '@react-three/drei'
+import axios from "axios"
+import { GameContext } from '../pages/AGamePage';
+
+
+
 
 export default function Gandalf(props) {
   const group = useRef()
   const { nodes, materials, animations } = useGLTF('/Gandalf.gltf')
   const { actions } = useAnimations(animations, group)
+  const { gameID, fetchSubquests } = useContext(GameContext);
+
+  const handleClick = async () => {
+    console.log('Gandalf clicked!')
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_subquests/?game_id=${gameID}`);
+      const questData = response.data;
+      console.log(questData)
+      if (questData[0].completed == false) {
+        const data = { completed: true }
+        const subquestResponse = await axios.put(`http://127.0.0.1:8000/api/v1/game_subquests/${questData[0].id}/`, data)
+        console.log('Quest completed:', subquestResponse.data)
+        fetchSubquests()
+      }
+    } catch (error) {
+      console.error("Error completing quests:", error);
+    }
+  }
+
   return (
-    <group ref={group} {...props} dispose={null} scale={.55} position={[23,0,23]} rotation={[0,-3,0]}>
+    <group ref={group} {...props} dispose={null} scale={.55} position={[23,0,23]} rotation={[0,-3,0]} onClick={handleClick}>
       <group name="Sketchfab_Scene">
         <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, 0]}>
           <group name="8cee5280cf03454d990e9bbc9c60552dfbx" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>

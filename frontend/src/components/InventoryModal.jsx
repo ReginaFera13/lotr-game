@@ -11,7 +11,6 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 import { GameContext } from '../pages/AGamePage';
 
 function InventoryModal(props) {
-    const [allInventory, setAllInventory] = useState([])
     const [inventory, setInventory] = useState([])
     const [weapon, setWeapon] = useState()
     const [helmet, setHelmet] = useState()
@@ -21,37 +20,11 @@ function InventoryModal(props) {
     const [footware, setFootware] = useState()
     const [consumable, setConsumable] = useState()
     const [currency, setCurrency] = useState()
-    const { team, teamInfo, teamStats, player, setPlayer, playerInfo, playerStats, renderPlayerName } = useContext(GameContext);
+    const { team, teamInfo, teamStats, player, setPlayer, playerInfo, playerStats, renderPlayerName, allInventory, setAllInventory, getAllInventory } = useContext(GameContext);
     // console.log('playerStats', playerStats)
     // console.log('playerInfo', playerInfo)
 
-    // console.log('props', props)
-
-    const getAllInventory = async (playerStats) => {
-        const id = playerStats.id
-        try {
-            const response = await axios.get(`http://127.0.0.1:8000/api/v1/game_inventory/?char_id=${id}`);
-            const items = response.data;
-            // console.log(items)
-            setAllInventory(items)
-        } catch (error) {
-            console.error("Error inventory:", error);
-        }
-    }
-
-    useEffect(() => {
-        if (playerStats) {
-            getAllInventory(playerStats)
-        }
-    }, [playerStats]);
-
-    // console.log('allInventory', allInventory)
-
-    // const name = () => {
-    //     if (playerInfo) {
-    //         return playerInfo[0].name
-    //     }
-    // }
+    
 
     const sortInventory = (allInventory) => {
         const inventoryData = []
@@ -86,7 +59,7 @@ function InventoryModal(props) {
     }
 
     useEffect(() => {
-        if (allInventory.length > 0) {
+        if (allInventory && allInventory.length > 0) {
             sortInventory(allInventory);
         }
     }, [allInventory]);
@@ -402,7 +375,7 @@ function InventoryModal(props) {
     }
 
     const renderInventory = () => {
-        console.log(inventory)
+        // console.log(inventory)
         if (inventory.length > 0) {
             return inventory.map((item, index) => {
                 const item_category = item.item.category;

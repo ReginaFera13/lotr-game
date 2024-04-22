@@ -22,7 +22,7 @@ function DeleteGameFileModal({ show, onHide, gameIdToDelete, handleDeleteGameFil
                         <Form.Group className="mb-3 center-text flex-center">
                             <Form.Label>Are you sure you want to PERMANENTLY delete your game file?</Form.Label>
                         </Form.Group>
-                        <Button onClick={() => handleDeleteGameFile(gameIdToDelete)} variant="outline-danger" size="lg">Delete Pofile</Button>
+                        <Button onClick={() => handleDeleteGameFile(gameIdToDelete)} variant="outline-danger" size="lg">Delete Game File</Button>
                     </Form>
             </Modal.Body>
             <Modal.Footer>

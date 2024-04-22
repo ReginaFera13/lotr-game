@@ -13,10 +13,15 @@ from .serializers import GameQuestSerializer, GameQuest
 class All_game_quests(APIView):
     def get(self, request):
         try:
-            all_quests = GameQuestSerializer(GameQuest.order_by("id"), many=True)
-            return Response(all_quests.data, status=HTTP_200_OK)
+            game_id = request.query_params.get('game_id')
+            if game_id:
+                all_quests = GameQuest.objects.filter(game_id=game_id).order_by("id")
+            else:
+                all_quests = GameQuest.objects.all().order_by("id")
+            ser_quests = GameQuestSerializer(all_quests, many=True)
+            return Response(ser_quests.data, status=HTTP_200_OK)
         except Exception as e:
-            return Response(e, status=HTTP_400_BAD_REQUEST)
+            return Response(str(e), status=HTTP_400_BAD_REQUEST)
 
     def post(self, request):
         ser_quests = GameQuestSerializer(data = request.data)
@@ -39,7 +44,7 @@ class A_game_quest(APIView):
         ser_quest = GameQuestSerializer(quest, data = request.data, partial = True)
         if ser_quest.is_valid():
             ser_quest.save()
-            return Response(status=HTTP_204_NO_CONTENT)
+            return Response(status=HTTP_200_OK)
         return Response(ser_quest.errors, status=HTTP_400_BAD_REQUEST)
     
     def delete(self, request, id):

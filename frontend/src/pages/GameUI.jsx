@@ -53,9 +53,9 @@ function GameUI( {handleEnterChapter} ) {
 
     return (
         <>
-            <div className="absolute text-black top-center ">
+            {/* <div className="absolute text-black top-center ">
                 <h1 className='center-text'>{`${chapterTitle}`}</h1>
-            </div>
+            </div> */}
             <div className="absolute left-top flex-left">
                 <Button onClick={() => gameMenuReturn()} variant="secondary" >
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" className="bi bi-box-arrow-left" viewBox="0 0 16 16">
