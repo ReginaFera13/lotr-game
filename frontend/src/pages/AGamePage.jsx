@@ -1,6 +1,7 @@
-import { Suspense, useState, useEffect, createContext, useContext } from 'react'
+import { Suspense, useState, useEffect, createContext, useContext, useRef } from 'react'
+import * as THREE from 'three';
 import axios from "axios"
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import { Physics } from '@react-three/cannon'
 import { Sky, OrbitControls, Plane } from '@react-three/drei'
 import { ShireGround } from '../scene-components/ShireGround'
@@ -41,6 +42,7 @@ function AGamePage() {
     const currentURL = window.location.href;
     const parts = currentURL.split('/');
     const gameID = parts[parts.length - 1];
+    
 
     // console.log('Game ID:', gameID);
 
@@ -498,9 +500,9 @@ function AGamePage() {
 
     if (chapter == 1) {
         return (
-            <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow, renderTeamName, renderPlayerName, chapterTitle, saveGameState, gameID, incompleteQuests, incompleteSubquests, completedQuests, fetchSubquests, allInventory, setAllInventory, getAllInventory, fetchQuests, resourceCollected }}>
+            <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow, renderTeamName, renderPlayerName, chapterTitle, saveGameState, gameID, incompleteQuests, incompleteSubquests, completedQuests, fetchSubquests, allInventory, setAllInventory, getAllInventory, fetchQuests, resourceCollected}}>
                 <div id="canvas-container" style={{ position: 'relative', width: '100%', height: '100vh' }}>
-                    <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }}>
+                    <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }} >
                         <OrbitControls/>
                         <Sky sunPosition={[100, 100, 20]}/>
                         <ambientLight intensity={0.6}/>
@@ -530,7 +532,7 @@ function AGamePage() {
         return (
             <GameContext.Provider value={{ team, teamInfo, teamStats, player, playerInfo, playerStats, mapModalShow, setMapModalShow, renderTeamName, renderPlayerName }}>
                 <div id="canvas-container" style={{ position: 'relative', width: '100%', height: '100vh' }}>
-                    <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }}>
+                    <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100vh' }} >
                         <OrbitControls/>
                         <Sky sunPosition={[100, 100, 20]}/>
                         <ambientLight intensity={0.6}/>

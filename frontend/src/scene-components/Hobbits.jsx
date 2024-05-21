@@ -1,11 +1,12 @@
-import { useRef, useContext } from 'react'
+import { useRef, useContext, useState, useEffect } from 'react'
 import * as THREE from 'three';
 import { useFBX } from "@react-three/drei";
+import { useFrame, useThree } from '@react-three/fiber';
 import axios from "axios"
 import { GameContext } from '../pages/AGamePage';
 
 export default function Hobbits() {
-    const { gameID, fetchSubquests, playerStats, getAllInventory, fetchQuests, resourceCollected } = useContext(GameContext);
+    const { gameID, fetchSubquests, playerStats, getAllInventory, fetchQuests, resourceCollected} = useContext(GameContext);
 
     const frodo = useFBX('/Peasant-Nolant-Frodo.fbx');
     const samwise = useFBX('/Peasant-Nolant-Samwise.fbx');
@@ -13,6 +14,37 @@ export default function Hobbits() {
     const pippin = useFBX('/Peasant-Nolant-Pippin.fbx');
     const bilbo = useFBX('/Peasant-Nolant-Bilbo.fbx');
     const maggot = useFBX('/Peasant-Nolant-Maggot.fbx');
+
+    const [frodoPosition, setFrodoPosition] = useState(new THREE.Vector3(-14, 0.2, -10));
+    const [frodoRotation, setFrodoRotation] = useState(new THREE.Euler(0, 0, 0));
+    const frodoRef = useRef();
+    
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            switch (event.key) {
+                case 's':
+                    frodoRef.current.translateZ(0.1);
+                    break;
+                case 'w':
+                    frodoRef.current.translateZ(-0.1);
+                    break;
+                case 'a':
+                    frodoRef.current.rotateY(0.5);
+                    break;
+                case 'd':
+                    frodoRef.current.rotateY(-0.5);
+                    break;
+                default:
+                    break;
+            }
+            setFrodoPosition(frodoRef.current.position.clone());
+            setFrodoRotation(frodoRef.current.rotation.clone());
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     frodo.traverse((child) => {
         if (child.isMesh) {
@@ -115,15 +147,9 @@ export default function Hobbits() {
         }
     }
 
-
-
-    
-
-    
-
     return (
         <group>
-            <primitive object={frodo} position={[-14,0.2,-10]} rotation={[0,0,0]} scale={0.015} />
+            <primitive object={frodo} position={frodoPosition} rotation={frodoRotation} scale={0.015} ref={frodoRef} />
             <primitive object={samwise} position={[4,0.2,-15]} rotation={[0,-3,0]} scale={0.015} />
             <primitive object={merry} position={[10,0,0]} rotation={[0,-3,0]} scale={0.015} />
             <primitive object={pippin} position={[10,0,3]} rotation={[0,0,0]} scale={0.015} />
